@@ -6,7 +6,14 @@ exports.selectArticleById = (id) => {
   return db.query(`SELECT author, title, article_id, body, topic, created_at, votes, article_img_url
                   FROM articles
                   WHERE article_id = $1`, [id])
-    .then((result) => result.rows);
+    .then((result) => {
+
+      if (result.rowCount < 1) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
+      }
+
+      return result.rows;
+    });
 }
 
 exports.selectAllArticles = () => {
@@ -20,13 +27,9 @@ exports.selectAllArticles = () => {
         GROUP BY a.article_id
         ORDER BY a.created_at DESC;`
     )
-    .then((result) => {
-      if (result.rowCount < 1) {
-        return Promise.reject({ status: 404, msg: "Not Found" });
-      }
-      return result.rows;
-    })
+    .then((result) => result.rows )
     .catch((error) => {
+
       next(error);
     });
 };

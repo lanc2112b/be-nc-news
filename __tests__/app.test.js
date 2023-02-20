@@ -41,30 +41,25 @@ describe("GET Endpoints", () => {
   describe("/api/articles/ (05)", () => {
     //returns an article slected by id
     it("200: Returns object with a single article, selected by id", () => {
-
-      const returned = [{
-        author: 'icellusedkars',
-        title: 'Sony Vaio; or, The Laptop',
-        article_id: 2,
-        body: 'Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.',
-        topic: 'mitch',
-        created_at: '2020-10-16T05:03:00.000Z',
-        votes: 0,
-        article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
-      }];
-
       return request(app)
         .get("/api/articles/2")
         .expect(200)
         .then((response) => {
           const { article } = response.body;
-          expect(article).toBeInstanceOf(Array);
-          expect(article).toHaveLength(1);
-          expect(article).toEqual(returned);
-
+          expect(article).toBeInstanceOf(Object);
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          });
         });
     });
   });
+
   describe("/api/articles (04)", () => {
     // Returns a list of articles (as array of topic objects)
     // Returns a count of comments belonging to the article as comment_count
@@ -76,7 +71,7 @@ describe("GET Endpoints", () => {
         .then((response) => {
           const { articles } = response.body;
           expect(articles).toBeInstanceOf(Array);
-          expect(articles).toHaveLength(5); 
+          expect(articles).toHaveLength(5);
           expect(articles).toBeSorted({ key: "created_at", descending: true });
           articles.forEach((article) => {
             expect(article).toMatchObject({
@@ -96,10 +91,17 @@ describe("GET Endpoints", () => {
 });
 
 describe("Error handling tests", () => {
-    
-    it("404: Any 404's from incorrect paths", () => {
-      return request(app)
-        .get("/api/unknown/path") // Expand this in t05 to include no result from query.
-        .expect(404)
-    });
+  it("404: Any 404's from incorrect paths", () => {
+    return request(app).get("/api/unknown/path").expect(404);
+  });
+
+  //TODO: add 400 error tests - DONE
+  it("404: When ID not found. ", () => {
+    return request(app)
+      .get("/api/articles/49999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  });
 });
