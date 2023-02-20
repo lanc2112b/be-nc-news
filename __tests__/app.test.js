@@ -72,8 +72,7 @@ describe("GET Endpoints", () => {
 
 
   describe("/api/articles/ (05)", () => {
-    // Returns a list of topics (as array of topic objects)
-    // Each topic object has properties 'slug' & 'description'
+    //returns an article slected by id
     it("200: Returns object with a single article, selected by id", () => {
 
       const returned = [{
