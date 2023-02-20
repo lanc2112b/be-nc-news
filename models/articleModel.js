@@ -13,7 +13,12 @@ exports.selectAllArticles = () => {
         GROUP BY a.article_id
         ORDER BY a.created_at DESC;`
     )
-    .then((result) => result.rows)
+    .then((result) => {
+      if (result.rowCount < 1) {
+        return Promise.reject({ status: 404, msg: "Not Found" });
+      }
+      return result.rows;
+    })
     .catch((error) => {
       next(error);
     });
