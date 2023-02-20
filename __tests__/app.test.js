@@ -26,7 +26,6 @@ describe("GET Endpoints", () => {
         .expect(200)
         .then((response) => {
           const { topics } = response.body;
-          //console.log(topics);
           expect(topics).toBeInstanceOf(Array);
           expect(topics).toHaveLength(3); // some length (count sql rows), arrg, mitch is a user here, run away!
           topics.forEach((topic) => {
