@@ -11,9 +11,7 @@ exports.selectCommentsByArticleId = (id) => {
       [id]
     )
     .then((result) => {
-      if (result.rowCount < 1) {
-        return Promise.reject({ status: 404, msg: "Not Found" });
-      }
+      /* Should return empty array, no reject */
 
       return result.rows;
     });

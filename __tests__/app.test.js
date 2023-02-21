@@ -72,7 +72,6 @@ describe("GET Endpoints", () => {
           const { comments } = response.body;
           expect(comments).toBeInstanceOf(Array); //Array of comment objects
           expect(comments).toHaveLength(2);
-          //expect(comments.article_id).toBe(3);
           expect(comments).toBeSorted({ key: "created_at", descending: true }); // desc recent first
           // check each obj in array
           comments.forEach((comment) => {
@@ -127,12 +126,22 @@ describe("Error handling tests", () => {
     return request(app).get("/api/unknown/path").expect(404);
   });
 
-  it("404: When ID not found. ", () => {
+  it("404: When Article ID not found. ", () => {
     return request(app)
       .get("/api/articles/49999")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Not Found");
+        expect(body.msg).toBe("Article Not Found");
       });
   });
+
+  it("404: Invalid article ID when pulling comments.", () => {
+    return request(app)
+      .get("/api/articles/200/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article Not Found");
+      });
+  });
+
 });

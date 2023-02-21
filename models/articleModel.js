@@ -9,7 +9,7 @@ exports.selectArticleById = (id) => {
     .then((result) => {
 
       if (result.rowCount < 1) {
-        return Promise.reject({ status: 404, msg: "Not Found" });
+        return Promise.reject({ status: 404, msg: "Article Not Found" });
       }
 
       return result.rows;
