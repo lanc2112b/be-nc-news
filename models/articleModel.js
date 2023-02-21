@@ -3,6 +3,10 @@ const db = require('../db/connection');
 
 exports.selectArticleById = (id) => {
 
+ /* if (typeof id === 'number') {
+    return Promise.reject({ status: 400, msg: "Invalid parameter type provided" });
+  }*/
+  
   return db.query(`SELECT author, title, article_id, body, topic, created_at, votes, article_img_url
                   FROM articles
                   WHERE article_id = $1 ;`, [id])

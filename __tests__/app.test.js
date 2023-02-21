@@ -17,7 +17,8 @@ afterAll(() => {
 });
 
 describe("GET Endpoints", () => {
-  describe("/api/topics (03)", () => {
+  
+  describe("GET /api/topics (03)", () => {
     // Returns a list of topics (as array of topic objects)
     // Each topic object has properties 'slug' & 'description'
     it("200: Returns an array of objects containing topic & description", () => {
@@ -38,7 +39,7 @@ describe("GET Endpoints", () => {
     });
   });
 
-  describe("/api/articles/ (05)", () => {
+  describe("GET /api/articles/ (05)", () => {
     //returns an article slected by id
     it("200: Returns object with a single article, selected by id", () => {
       return request(app)
@@ -61,7 +62,7 @@ describe("GET Endpoints", () => {
     });
   });
 
-  describe("/api/articles/:article_id/comments (06)", () => {
+  describe("GET /api/articles/:article_id/comments (06)", () => {
     //returns comments for an article selected by id
     // Has: comment_id, votes, created_at, author, body, article_id. 
     it("200: Returns object with array containing all comments belonging to a specific article id", () => {
@@ -91,7 +92,7 @@ describe("GET Endpoints", () => {
 
 
 
-  describe("/api/articles (04)", () => {
+  describe("GET /api/articles (04)", () => {
     // Returns a list of articles (as array of topic objects)
     // Returns a count of comments belonging to the article as comment_count
     // array is sorted by date, ascending
@@ -121,6 +122,38 @@ describe("GET Endpoints", () => {
   });
 });
 
+describe("POST Endpoints", () => {
+  
+  describe("POST: /api/articles/:article_id/comments (07)", () => {
+    const newComment = {
+      username: 'rogersop',
+      body: 'Some new comment for article with id: 3',
+    };
+
+    it('Adds a new comment to article, if article exists', () => {
+      return request(app)
+        .post("/api/articles/3/comments")
+        .send(newComment)
+        .expect(200)
+        .then((response) => {
+          const { comment } = response.body;
+          expect(comment).toBeInstanceOf(Object); //Array of comment objects
+          expect(comment.article_id).toBe(3);
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            article_id: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+          });
+        });
+    });
+  });
+
+});
+
+
 describe("Error handling tests", () => {
   it("404: Any 404's from incorrect paths", () => {
     return request(app)
@@ -148,5 +181,15 @@ describe("Error handling tests", () => {
         expect(body.msg).toBe("Article Not Found");
       });
   });
+
+  /** Ok Beth's bad url is breaking everything, or at least my handling of it is! */
+ /* it("400: Invalid id type supplied to /api/articles/.", () => {
+    return request(app)
+      .get("/api/articles/banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid parameter type provided");
+      });
+  });*/
 
 });
