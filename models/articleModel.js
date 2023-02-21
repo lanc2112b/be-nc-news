@@ -5,11 +5,11 @@ exports.selectArticleById = (id) => {
 
   return db.query(`SELECT author, title, article_id, body, topic, created_at, votes, article_img_url
                   FROM articles
-                  WHERE article_id = $1`, [id])
+                  WHERE article_id = $1 ;`, [id])
     .then((result) => {
 
       if (result.rowCount < 1) {
-        return Promise.reject({ status: 404, msg: "Not Found" });
+        return Promise.reject({ status: 404, msg: "Article Not Found" });
       }
 
       return result.rows;

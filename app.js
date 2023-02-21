@@ -5,11 +5,14 @@ app.use(express.json());
 
 const { default404s, errorHandler400, errorHandler500 } = require('./controllers/errorHandlerController');
 const { getTopics } = require('./controllers/topicController');
-const { getArticleById, getArticles  } = require('./controllers/articleController');
+const { getArticleById, getArticles } = require('./controllers/articleController');
+const { getArtCommentsById } = require('./controllers/commentController');
 
 /** Imports & BP above here */
 
 /** routes */
+app.get("/api/articles/:article_id/comments", getArtCommentsById);
+
 app.get('/api/articles/:article_id', getArticleById);
 
 app.get('/api/articles', getArticles);
