@@ -38,6 +38,28 @@ describe("GET Endpoints", () => {
     });
   });
 
+  describe("/api/articles/ (05)", () => {
+    //returns an article slected by id
+    it("200: Returns object with a single article, selected by id", () => {
+      return request(app)
+        .get("/api/articles/2")
+        .expect(200)
+        .then((response) => {
+          const { article } = response.body;
+          expect(article).toBeInstanceOf(Object);
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          });
+        });
+    });
+  });
+
   describe("/api/articles (04)", () => {
     // Returns a list of articles (as array of topic objects)
     // Returns a count of comments belonging to the article as comment_count
@@ -49,7 +71,7 @@ describe("GET Endpoints", () => {
         .then((response) => {
           const { articles } = response.body;
           expect(articles).toBeInstanceOf(Array);
-          expect(articles).toHaveLength(5); 
+          expect(articles).toHaveLength(5);
           expect(articles).toBeSorted({ key: "created_at", descending: true });
           articles.forEach((article) => {
             expect(article).toMatchObject({
@@ -68,24 +90,18 @@ describe("GET Endpoints", () => {
   });
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 describe("Error handling tests", () => {
-    
-    it("404: Any 404's from incorrect paths", () => {
-      return request(app)
-        .get("/api/unknown/path") // Expand this in t05 to include no result from query.
-        .expect(404)
-    });
+  it("404: Any 404's from incorrect paths", () => {
+    return request(app).get("/api/unknown/path").expect(404);
+  });
+
+  //TODO: add 400 error tests - DONE
+  it("404: When ID not found. ", () => {
+    return request(app)
+      .get("/api/articles/49999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  });
 });
