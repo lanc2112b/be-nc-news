@@ -92,7 +92,12 @@ describe("GET Endpoints", () => {
 
 describe("Error handling tests", () => {
   it("404: Any 404's from incorrect paths", () => {
-    return request(app).get("/api/unknown/path").expect(404);
+    return request(app)
+      .get("/api/unknown/path")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid path requested");
+      });
   });
 
   //TODO: add 400 error tests - DONE
