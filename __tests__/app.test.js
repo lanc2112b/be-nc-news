@@ -119,6 +119,42 @@ describe("GET Endpoints", () => {
         });
     });
   });
+
+
+describe('PATCH Endpoints', () => {
+  
+  describe("PATCH /api/articles/:article_id (08)", () => {
+
+    it("200: Returns an object of updated article", () => {
+      const updateBody = { inc_votes: 2 }; // expect votes to be increment by 2
+      return request(app)
+        .patch("/api/articles/2")
+        .send(updateBody)
+        .expect(201)
+        .then((response) => {
+          const { article } = response.body;
+          expect(article).toBeInstanceOf(Object);
+          expect(article.votes).toBe(2); // whatever votes are + 2,  currently 0 in DB
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+            });
+         
+        });
+    });
+  });
+
+});
+
+
+
+
+
 });
 
 describe("Error handling tests", () => {

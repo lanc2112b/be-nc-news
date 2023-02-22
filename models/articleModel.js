@@ -1,4 +1,5 @@
 const db = require('../db/connection');
+const format = require('pg-format');
 /** Imports & BP above here */
 
 exports.selectArticleById = (id) => {
@@ -33,3 +34,27 @@ exports.selectAllArticles = () => {
       next(error);
     });
 };
+
+exports.updateArticleById = (id, update) => {
+  
+  // prep data update
+  const nestedUpdates = [];
+  // create each [ "IDENT/COL = DATA", key, val] AS [inc_votes = 2] via 'format'
+  for (let key in update) {
+    nestedUpdates.push(format("%I = %L", key, update[key]));
+  }
+  
+  let setStrings = nestedUpdates.join(",");
+
+  const queryString = format(
+    `UPDATE articles a
+     SET
+     %s            
+    WHERE a.article_id = %L
+    RETURNING *;`,
+    setStrings,
+    id
+  );
+
+  return db.query(queryString).then((result) => result.rows);
+}
