@@ -43,7 +43,7 @@ exports.postArtCommentById = (request, response, next) => {
       return insertCommentByArtId(article_id, username, body); //so not nesting then, sure there's a better way?
     }) // hmm more comments than code
     .then((result) => {
-      response.status(200).send({ comment: result[0] }); // respond with the newly inserted row.
+      response.status(201).send({ comment: result[0] }); // respond with the newly inserted row.
     })
     .catch((error) => {
       next(error);

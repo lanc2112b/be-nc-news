@@ -134,7 +134,7 @@ describe("POST Endpoints", () => {
       return request(app)
         .post("/api/articles/3/comments")
         .send(newComment)
-        .expect(200)
+        .expect(201)
         .then((response) => {
           const { comment } = response.body;
           expect(comment).toBeInstanceOf(Object); //Array of comment objects
