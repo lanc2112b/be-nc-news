@@ -139,13 +139,13 @@ describe("POST Endpoints", () => {
           const { comment } = response.body;
           expect(comment).toBeInstanceOf(Object); //Array of comment objects
           expect(comment.article_id).toBe(3);
+          expect(comment.author).toBe('rogersop');
+          expect(comment.body).toBe('Some new comment for article with id: 3');
+          // extracted some of the properties to be specifics.
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
             votes: expect.any(Number),
-            article_id: expect.any(Number),
             created_at: expect.any(String),
-            author: expect.any(String),
-            body: expect.any(String),
           });
         });
     });
@@ -192,4 +192,78 @@ describe("Error handling tests", () => {
       });
   });
 
+  //* client posts a comment to an article that doesnt exist
+  // Already handled in postArtCommentById() with selectArticleById(article_id)
+  // It's rejected with error or exists
+  it("404: Article not found on POST new article.", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "Some new comment for article with id: 3",
+    };
+    return request(app)
+      .post("/api/articles/1000/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article Not Found");
+      });
+  });
+
+  //client posts a comment to an article id that is not a number
+  // Handled in the error handler as per GET /api/articles/banana
+  it("400: Invalid type passed as article_id.", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "Diese Woche esse ich hauptsächlich Kimchee",
+    };
+    return request(app)
+      .post("/api/articles/banana/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid parameter type provided");
+      });
+  });
+
+  // client does a post requests to a valid article but forgets to send the comment
+  it("400: Empty object / no object passed in request.", () => {
+    const newComment = {};
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No content provided");
+      });
+  });
+
+  // client posts a comment but the username doesn't exist in your database
+  it("400: Invalid user provided.", () => {
+    const newComment = {
+      username: "twsbidiamond580",
+      body: "Ich bin keine kartoffel",
+    };
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad username");
+      });
+  });
+
+  // client forgets to provide a username
+  it("400: No user provided.", () => {
+    const newComment = {
+      username: "",
+      body: "Capybara, Kapibara, Kapivar, Kapübara, Carpincho, Wasserschwein",
+    };
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No username provided");
+      });
+  });
 });

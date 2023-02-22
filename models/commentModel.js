@@ -28,3 +28,14 @@ exports.insertCommentByArtId = (id, author, comment) => {
         RETURNING *;`, [id, author, comment])
     .then((result) => result.rows);
 }
+
+// strictly a user model check TODO: move to user model in t09 after PR resolves
+exports.selectUsernameByName = (username) => {
+  return db.query(`SELECT * FROM users WHERE username = $1`, [username])
+    .then((result) => {
+      if (result.rows < 1) {
+        return Promise.reject({status: 400, msg: 'Bad username'});
+      }
+      return result.rows;
+    });
+}
