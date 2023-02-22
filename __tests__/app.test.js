@@ -16,6 +16,25 @@ afterAll(() => {
   db.end();
 });
 
+describe('API Description', () => {
+  describe('GET /api', () => {
+    it("200: Returns an object of api endpoints and descriptions", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then((response) => {
+          const { endpoints } = response.body;
+          expect(endpoints).toBeInstanceOf(Object);
+          expect(endpoints).toMatchObject({
+              // TODO: describe expects of object here
+          });
+        });
+    });
+  });
+});
+
+
+
 describe("GET Endpoints", () => {
   describe("/api/topics (03)", () => {
     // Returns a list of topics (as array of topic objects)

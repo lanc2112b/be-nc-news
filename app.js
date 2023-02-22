@@ -7,7 +7,7 @@ const { errorHandler400, errorHandler500 } = require('./controllers/errorHandler
 const { getTopics } = require('./controllers/topicController');
 const { getArticleById, getArticles } = require('./controllers/articleController');
 const { getArtCommentsById } = require('./controllers/commentController');
-
+const { getApiRoutes } = require('./controllers/apiRouteController');
 /** Imports & BP above here */
 
 /** routes */
@@ -19,7 +19,7 @@ app.get('/api/articles', getArticles);
 
 app.get('/api/topics', getTopics);
 
-
+app.get('/api', getApiRoutes);
 
 app.use(errorHandler400);
 app.use(errorHandler500);
