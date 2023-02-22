@@ -7,6 +7,7 @@ const { errorHandler400, errorHandler500 } = require('./controllers/errorHandler
 const { getTopics } = require('./controllers/topicController');
 const { getArticleById, getArticles } = require('./controllers/articleController');
 const { getArtCommentsById } = require('./controllers/commentController');
+const { getUsers } = require('./controllers/userController');
 
 /** Imports & BP above here */
 
@@ -18,6 +19,8 @@ app.get('/api/articles/:article_id', getArticleById);
 app.get('/api/articles', getArticles);
 
 app.get('/api/topics', getTopics);
+
+app.get("/api/users", getUsers);
 
 
 

@@ -38,6 +38,27 @@ describe("GET Endpoints", () => {
     });
   });
 
+  describe("/api/users (09)", () => {
+
+    it("200: Returns an array of objects containing users", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((response) => {
+          const { users } = response.body;
+          expect(users).toBeInstanceOf(Array);
+          expect(users).toHaveLength(4); // currently 4 users in DB
+          users.forEach((user) => {
+            expect(user).toMatchObject({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+
   describe("/api/articles/ (05)", () => {
     //returns an article slected by id
     it("200: Returns object with a single article, selected by id", () => {
