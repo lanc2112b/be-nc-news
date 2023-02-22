@@ -2,7 +2,7 @@ const { selectArticleById, selectAllArticles  } = require('../models/articleMode
 /** Imports & BP above here */
 
 exports.getArticleById = (request, response, next) => {
-
+  
   const { article_id } = request.params;
 
   selectArticleById(article_id)

@@ -182,14 +182,14 @@ describe("Error handling tests", () => {
       });
   });
 
-  /** Ok Beth's bad url is breaking everything, or at least my handling of it is! */
- /* it("400: Invalid id type supplied to /api/articles/.", () => {
+  /* Ok Beth's bad url is breaking everything, or at least my handling of it is! */
+  it("400: Invalid id type supplied to /api/articles/.", () => {
     return request(app)
       .get("/api/articles/banana")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid parameter type provided");
       });
-  });*/
+  });
 
 });
