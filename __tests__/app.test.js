@@ -343,6 +343,25 @@ describe("POST Endpoints", () => {
   });
 });
 
+
+describe("DELETE Endpoints", () => {
+  describe("DELETE: /api/comments/:comment_id (12)", () => {
+    it("Deletes a comment and returns 204 & no content", () => {
+      return request(app)
+        .delete("/api/comments/10")
+        .expect(204)
+        .then((response) => {
+          expect(response.body).toEqual({});
+          return request(app).delete("/api/comments/10");
+        }).then((response) => {
+          expect(response.status).toBe(404);
+          expect(response.body.msg).toBe("Cannot find article with ID provided");
+        });
+    });
+  });
+});
+
+
 describe("Error handling tests", () => {
 
   describe("GET Error Handlers", () => {
@@ -543,6 +562,24 @@ describe("Error handling tests", () => {
       return request(app)
         .patch("/api/articles/potato")
         .send(updateBody)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid parameter type provided");
+        });
+    });
+
+    it("404: DELETE /api/comments/:comment_id non existent ID", () => {
+      return request(app)
+        .delete("/api/comments/10000")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Cannot find article with ID provided");
+        });
+    });
+
+    it("404: DELETE /api/comments/:comment_id non valid ID type", () => {
+      return request(app)
+        .delete("/api/comments/capybara")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Invalid parameter type provided");
