@@ -1,13 +1,12 @@
-const { selectArticleById, selectAllArticles  } = require('../models/articleModel');
-/** Imports & BP above here */
+const { selectArticleById, selectAllArticles, updateArticleById  } = require('../models/articleModel');
 
 exports.getArticleById = (request, response, next) => {
-
+  
   const { article_id } = request.params;
 
   selectArticleById(article_id)
     .then((result) => {
-      response.status(200).send({ article: result[0] });
+      response.status(200).send({ article: result });
     })
     .catch((error) => {
       next(error);
@@ -15,7 +14,10 @@ exports.getArticleById = (request, response, next) => {
 }
 
 exports.getArticles = (request, response, next) => {
-  selectAllArticles()
+
+  const { order, sort_by, topic } = request.query;
+
+  selectAllArticles(order, sort_by, topic)
     .then((results) => {
       response.status(200).send({ articles: results });
     })
@@ -23,3 +25,18 @@ exports.getArticles = (request, response, next) => {
       next(error);
     });
 };
+
+exports.patchArticleById = (request, response, next) => {
+
+  const { article_id } = request.params;
+
+  const updateData = request.body;
+
+    updateArticleById(article_id, updateData)
+      .then((result) => {
+        response.status(201).send({ article: result });
+      })
+      .catch((error) => {
+        next(error);
+      });
+}

@@ -1,7 +1,8 @@
-const {selectCommentsByArticleId} = require('../models/commentModel');
-const { selectArticleById } = require('../models/articleModel');
+const { selectCommentsByArticleId, insertCommentByArtId, deleteCommentById } = require("../models/commentModel");
 
-/** hmmm, comments belong to articles, should possibly be part of articles?  */
+const { selectUsernameByName } = require('../models/userModel');
+
+const { selectArticleById } = require('../models/articleModel');
 
 exports.getArtCommentsById = (request, response, next) => {
 
@@ -19,3 +20,39 @@ exports.getArtCommentsById = (request, response, next) => {
       next(error);
     });
 };
+
+
+exports.postArtCommentById = (request, response, next) => {
+  const { article_id } = request.params;
+  const { username, body } = request.body;
+
+  selectArticleById(article_id)
+    .then((result) => {
+
+      return selectUsernameByName(username);
+    }) 
+    .then((result) => { 
+
+      return insertCommentByArtId(article_id, username, body);
+    })
+    .then((result) => {
+      
+      response.status(201).send({ comment: result });
+    })
+    .catch((error) => {
+      next(error);
+    });
+}
+
+exports.delCommentById = (request, response, next) => {
+  
+  const { comment_id } = request.params;
+
+  deleteCommentById(comment_id)
+    .then((result) => {
+      response.sendStatus(204);
+    })
+    .catch((error) => {
+      next(error);
+    });
+}
