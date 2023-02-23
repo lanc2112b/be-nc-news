@@ -14,6 +14,16 @@ exports.getArticleById = (request, response, next) => {
 }
 
 exports.getArticles = (request, response, next) => {
+
+  // implement queries, 
+  //topic (by specified topic)
+  //sort_by ANY valid column
+  // order IN which order by
+
+  const { order, sort_by, topic } = request.query;
+
+  console.log(order, sort_by, topic);
+
   selectAllArticles()
     .then((results) => {
       response.status(200).send({ articles: results });
