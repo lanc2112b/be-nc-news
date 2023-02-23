@@ -225,7 +225,7 @@ describe("Error handling tests", () => {
       .send(updateBody)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Article Not Found");
+        expect(body.msg).toBe("Invalid type for article id");
       });
   });
 });

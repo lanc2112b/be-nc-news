@@ -39,13 +39,16 @@ exports.updateArticleById = (id, update) => {
   
   const { inc_votes } = update;
 
+  //console.log(typeof +id, "<< ID type. ", id, "Current ID ");
+
   if (id < 1) {
     return Promise.reject({ status: 400, msg: "Invalid type for article id" });
-  }
-
-  if (!update) {
-    return Promise.reject({ status: 400, msg: "No data provided" });
-  }
+  } /*else if (typeof +id !== "number") {
+    return Promise.reject({ status: 400, msg: "Invalid type for article id" });
+  }*/
+    if (!update) {
+      return Promise.reject({ status: 400, msg: "No data provided" });
+    }
 
   if (update.hasOwnProperty("inc_votes") === false) {
     return Promise.reject({
@@ -67,13 +70,13 @@ exports.updateArticleById = (id, update) => {
       [inc_votes, id]
     )
     .then((result) => {
-      if (result.rows < 1) {
-        return Promise.reject({ status: 404, msg: "Article Not Found" });
-      }
+      //if (result.rows < 1) {
+        //return Promise.reject({ status: 404, msg: "Article Not Found" });
+      //}
       return result.rows;
     })
     .catch((error) => {
-      console.log(error);
+      //console.log(error);
       next(error);
     });
 }
