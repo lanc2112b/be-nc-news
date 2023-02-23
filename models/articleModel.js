@@ -36,11 +36,11 @@ exports.selectAllArticles = (order = 'desc', sort = 'created_at', topic = null) 
  
    const validOrderOptions = ["asc", "desc"];
  
-   if (!validOrderOptions.includes(order)) {
+   if (!validOrderOptions.includes(order.toLowerCase())) {
      return Promise.reject({ status: 400, msg: "Bad Request: order direction" });
    }
  
-   if (sort && !validSortColumns.includes(sort)) {
+   if (sort && !validSortColumns.includes(sort.toLowerCase())) {
      return Promise.reject({ status: 400, msg: "Bad Request: sort by" });
    }
 

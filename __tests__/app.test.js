@@ -139,8 +139,8 @@ describe("GET Endpoints", () => {
           expect(articles).toHaveLength(1); // 1 cat article
           expect(articles).toBeSorted({ key: "created_at", descending: true }); //default
           articles.forEach((article) => {
-            expect(article.author).toBe('rogersop');
-            expect(article.topic).toBe("cats");
+            expect(article.author).toBe('rogersop'); // this has been here the whole time
+            expect(article.topic).toBe("cats"); // and this... 
             expect(article).toMatchObject({
               title: expect.any(String),
               article_id: expect.any(Number),
@@ -158,7 +158,7 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (10) filtered by queries", () => {
     it("200: Returns an array of objects containing articles filtered by topic > mitch", () => {
       return request(app)
-        .get("/api/articles?topic=mitch") // has one cat article
+        .get("/api/articles?topic=mitch") 
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
@@ -189,8 +189,34 @@ describe("GET Endpoints", () => {
         .then((response) => {
           const { articles } = response.body;
           expect(articles).toBeInstanceOf(Array);
-          expect(articles).toHaveLength(12); // 11 mitch articles
+          expect(articles).toHaveLength(12); // all articles
           expect(articles).toBeSorted({ key: "title", descending: true });
+          articles.forEach((article) => {
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              topic: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+
+  describe("GET /api/articles (10) filtered by queries", () => {
+    it("200: Returns an array of objects containing articles sorted > desc", () => {
+      return request(app)
+        .get("/api/articles?order=desc") 
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(12); // all articles
+          expect(articles).toBeSorted({ key: "created_at", descending: true }); // specified desc
           articles.forEach((article) => {
             expect(article).toMatchObject({
               author: expect.any(String),
@@ -210,15 +236,15 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (10) filtered by queries", () => {
     it("200: Returns an array of objects containing articles sorted by column > title", () => {
       return request(app)
-        .get("/api/articles?sort_by=title&order=asc") // has one cat article
+        .get("/api/articles?sort_by=title&order=asc")
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
           expect(articles).toBeInstanceOf(Array);
-          expect(articles).toHaveLength(12); // 11 mitch articles
+          expect(articles).toHaveLength(12); // 11 mitch articles + 1 cat
           expect(articles).toBeSorted({ key: "title", ascending: true });
           articles.forEach((article) => {
-            expect(article).toMatchObject({
+              expect(article).toMatchObject({
               author: expect.any(String),
               topic: expect.any(String),
               title: expect.any(String),
@@ -236,7 +262,7 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (10) filtered by queries", () => {
     it("200: Returns an array of objects containing articles topic=mitch, sort_by=votes, order=asc", () => {
       return request(app)
-        .get("/api/articles?topic=mitch&sort_by=votes&order=asc") // has one cat article
+        .get("/api/articles?topic=mitch&sort_by=votes&order=asc") 
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
@@ -244,9 +270,9 @@ describe("GET Endpoints", () => {
           expect(articles).toHaveLength(11); // 11 mitch articles
           expect(articles).toBeSorted({ key: "votes", ascending: true });
           articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
             expect(article).toMatchObject({
               author: expect.any(String),
-              topic: expect.any(String),
               title: expect.any(String),
               article_id: expect.any(Number),
               created_at: expect.any(String),
