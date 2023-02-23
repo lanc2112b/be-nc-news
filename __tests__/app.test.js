@@ -110,7 +110,7 @@ describe("GET Endpoints", () => {
         .then((response) => {
           const { articles } = response.body;
           expect(articles).toBeInstanceOf(Array);
-          expect(articles).toHaveLength(5);
+          expect(articles).toHaveLength(12);
           expect(articles).toBeSorted({ key: "created_at", descending: true });
           articles.forEach((article) => {
             expect(article).toMatchObject({
@@ -127,6 +127,166 @@ describe("GET Endpoints", () => {
         });
     });
   });
+
+  describe("GET /api/articles (10) filtered by queries", () => {
+    it("200: Returns an array of objects containing articles filtered by topic > cats", () => {
+      return request(app)
+        .get("/api/articles?topic=cats") // has one cat article
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(1); 
+          expect(articles).toBeSorted({ key: "created_at", descending: true }); //default
+          articles.forEach((article) => {
+            expect(article.author).toBe('rogersop'); 
+            expect(article.topic).toBe("cats"); 
+            expect(article).toMatchObject({
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+
+  describe("GET /api/articles (10) filtered by queries", () => {
+    it("200: Returns an array of objects containing articles filtered by topic > mitch", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch") 
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(11); // 11 mitch articles
+          expect(articles).toBeSorted({ key: "created_at", descending: true }); //default
+          articles.forEach((article) => {
+            expect(article.topic).toBe('mitch');
+              expect(article).toMatchObject({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(String),
+              });
+          });
+        });
+    });
+  });
+
+  describe("GET /api/articles (10) filtered by queries", () => {
+    it("200: Returns an array of objects containing articles sorted by column > title", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title") // has one cat article
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(12); // all articles
+          expect(articles).toBeSorted({ key: "title", descending: true });
+          articles.forEach((article) => {
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              topic: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+
+  describe("GET /api/articles (10) filtered by queries", () => {
+    it("200: Returns an array of objects containing articles sorted > desc", () => {
+      return request(app)
+        .get("/api/articles?order=desc") 
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(12); // all articles
+          expect(articles).toBeSorted({ key: "created_at", descending: true }); // specified desc
+          articles.forEach((article) => {
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              topic: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+
+  describe("GET /api/articles (10) filtered by queries", () => {
+    it("200: Returns an array of objects containing articles sorted by column > title", () => {
+      return request(app)
+        .get("/api/articles?sort_by=title&order=asc")
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(12); // 11 mitch articles + 1 cat
+          expect(articles).toBeSorted({ key: "title", ascending: true });
+          articles.forEach((article) => {
+              expect(article).toMatchObject({
+              author: expect.any(String),
+              topic: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+
+  describe("GET /api/articles (10) filtered by queries", () => {
+    it("200: Returns an array of objects containing articles topic=mitch, sort_by=votes, order=asc", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&sort_by=votes&order=asc") 
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(11); // 11 mitch articles
+          expect(articles).toBeSorted({ key: "votes", ascending: true });
+          articles.forEach((article) => {
+            expect(article.topic).toBe("mitch");
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+
+
+
 }); // END GET
 
 describe("PATCH Endpoints", () => {
@@ -221,6 +381,34 @@ describe("Error handling tests", () => {
           expect(body.msg).toBe("Invalid parameter type provided");
         });
     });
+
+    it("404: Non-existant topic supplied to /api/articles/.", () => {
+      return request(app)
+        .get("/api/articles?topic=capybaras")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("No Articles Found");
+        });
+    });
+
+    it("400: Bad sort_by string to /api/articles/.", () => {
+      return request(app)
+        .get("/api/articles?sort_by=capybaras")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request: sort by");
+        });
+    });
+
+    it("400: Bad order string to /api/articles/.", () => {
+      return request(app)
+        .get("/api/articles?order=dave")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request: order direction");
+        });
+    });
+
   });
 
   describe("POST Error Handlers", () => {
@@ -360,5 +548,6 @@ describe("Error handling tests", () => {
           expect(body.msg).toBe("Invalid parameter type provided");
         });
     });
+
   });
 });

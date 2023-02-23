@@ -1,8 +1,9 @@
 const {
   selectCommentsByArticleId,
   insertCommentByArtId,
-  selectUsernameByName,
 } = require("../models/commentModel");
+
+const { selectUsernameByName } = require('../models/userModel');
 
 const { selectArticleById } = require('../models/articleModel');
 
