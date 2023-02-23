@@ -6,7 +6,7 @@ app.use(express.json());
 const { getTopics } = require('./controllers/topicController');
 const { getUsers } = require('./controllers/userController');
 const { getArticleById,  getArticles,  patchArticleById } = require("./controllers/articleController");
-const { getArtCommentsById, postArtCommentById } = require("./controllers/commentController");
+const { getArtCommentsById, postArtCommentById, delCommentById } = require("./controllers/commentController");
 const { default404s, errorHandler400, errorHandler500 } = require("./controllers/errorHandlerController");
 
 /** Imports & BP above here */
@@ -23,6 +23,8 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getArtCommentsById);
 
 app.post("/api/articles/:article_id/comments", postArtCommentById);
+
+app.delete("/api/comments/:comment_id", delCommentById);
 
 app.get('/api/articles/:article_id', getArticleById);
 

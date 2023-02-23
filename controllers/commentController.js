@@ -1,7 +1,4 @@
-const {
-  selectCommentsByArticleId,
-  insertCommentByArtId,
-} = require("../models/commentModel");
+const { selectCommentsByArticleId, insertCommentByArtId, deleteCommentById } = require("../models/commentModel");
 
 const { selectUsernameByName } = require('../models/userModel');
 
@@ -41,6 +38,19 @@ exports.postArtCommentById = (request, response, next) => {
     .then((result) => {
       
       response.status(201).send({ comment: result });
+    })
+    .catch((error) => {
+      next(error);
+    });
+}
+
+exports.delCommentById = (request, response, next) => {
+  
+  const { comment_id } = request.params;
+
+  deleteCommentById(comment_id)
+    .then((result) => {
+      response.sendStatus(204);
     })
     .catch((error) => {
       next(error);
