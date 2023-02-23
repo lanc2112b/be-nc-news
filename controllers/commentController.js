@@ -46,3 +46,7 @@ exports.postArtCommentById = (request, response, next) => {
       next(error);
     });
 }
+
+exports.delCommentById = (request, response, next) => {
+  const { comment_id } = request.params;
+}
