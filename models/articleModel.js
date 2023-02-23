@@ -22,16 +22,8 @@ exports.selectArticleById = (id) => {
     });
 };
 
-exports.selectAllArticles = (
-  order = "desc",
-  sort = "created_at",
-  topic = null
-) => {
-  // topic = topic column
-  // sort_by = any column
-  // default = created_at
-  // order = asc / desc
-  // default desc
+exports.selectAllArticles = (order = "desc", sort = "created_at", topic = null) => {
+
 
   const validSortColumns = [
     "article_id",
