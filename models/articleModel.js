@@ -1,4 +1,5 @@
 const db = require('../db/connection');
+const format = require('pg-format');
 /** Imports & BP above here */
 
 exports.selectArticleById = (id) => {
@@ -11,8 +12,7 @@ exports.selectArticleById = (id) => {
       if (result.rowCount < 1) {
         return Promise.reject({ status: 404, msg: "Article Not Found" });
       }
-
-      return result.rows;
+      return result.rows[0];
     });
 }
 
@@ -33,3 +33,42 @@ exports.selectAllArticles = () => {
       next(error);
     });
 };
+
+exports.updateArticleById = (id, update) => {
+  
+  const { inc_votes } = update;
+
+  if (id < 1) {
+    return Promise.reject({ status: 400, msg: "Invalid type for article id" });
+  }
+    
+  if (!update) {
+    return Promise.reject({ status: 400, msg: "No data provided" });
+  }
+
+  if (update.hasOwnProperty("inc_votes") === false) {
+    return Promise.reject({
+      status: 400,
+      msg: "Object does not contain correct key(s)",
+    });
+  } else if (typeof update.inc_votes !== "number") {
+    return Promise.reject({ status: 400, msg: "Invalid value type in object" });
+  }
+
+  return db
+    .query(
+      `UPDATE articles
+        SET
+          votes = votes + $1            
+        WHERE article_id = $2
+        RETURNING *;`,
+      [inc_votes, id]
+    )
+    .then((result) => {
+      if (result.rows < 1) {
+        return Promise.reject({ status: 404, msg: "Article Not Found" });
+      }
+      return result.rows[0];
+    })
+
+}
