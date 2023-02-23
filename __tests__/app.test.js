@@ -58,17 +58,41 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles/ (05)", () => {
     it("200: Returns object with a single article, selected by id", () => {
       return request(app)
-        .get("/api/articles/2")
+        .get("/api/articles/3")
         .expect(200)
         .then((response) => {
           const { article } = response.body;
           expect(article).toBeInstanceOf(Object);
-          expect(article.article_id).toBe(2);
+          expect(article.article_id).toBe(3);
+            expect(article).toMatchObject({
+              article_id: expect.any(Number),
+              created_at: expect.any(String),
+              title: expect.any(String),
+              author: expect.any(String),
+              votes: expect.any(Number),
+              topic: expect.any(String),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+        });
+    });
+  });
+
+  describe("GET /api/articles/ (11)", () => {
+    it("200: Returns object with a single article, selected by id to include comment_count", () => {
+      return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then((response) => {
+          const { article } = response.body;
+          expect(article).toBeInstanceOf(Object);
+          expect(article.article_id).toBe(1);
+          expect(article.comment_count).toBe("11");
+          expect(article.author).toBe("butter_bridge");
+          expect(article.title).toBe("Living in the shadow of a great man");
+          expect(article.topic).toBe("mitch");
           expect(article).toMatchObject({
-            author: expect.any(String),
-            title: expect.any(String),
             article_id: expect.any(Number),
-            topic: expect.any(String),
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
