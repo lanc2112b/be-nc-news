@@ -5,9 +5,13 @@ const format = require("pg-format");
 exports.selectArticleById = (id) => {
   return db
     .query(
-      `SELECT author, title, article_id, body, topic, created_at, votes, article_img_url
-                  FROM articles
-                  WHERE article_id = $1 ;`,
+      `SELECT a.author, a.title, a.article_id, a.body, a.topic, a.created_at, a.votes, a.article_img_url,
+          COUNT(c.comment_id) AS comment_count
+        FROM articles a
+        JOIN comments c
+        ON c.article_id = a.article_id
+        WHERE a.article_id = $1
+        GROUP BY a.article_id;`,
       [id]
     )
     .then((result) => {
@@ -18,16 +22,8 @@ exports.selectArticleById = (id) => {
     });
 };
 
-exports.selectAllArticles = (
-  order = "desc",
-  sort = "created_at",
-  topic = null
-) => {
-  // topic = topic column
-  // sort_by = any column
-  // default = created_at
-  // order = asc / desc
-  // default desc
+exports.selectAllArticles = (order = "desc", sort = "created_at", topic = null) => {
+
 
   const validSortColumns = [
     "article_id",
