@@ -18,14 +18,32 @@ exports.selectCommentsByArticleId = (id) => {
     });
 };
 
-exports.insertCommentByArtId = (id, author, comment) => {
+exports.insertCommentByArtId = (id, author, body) => {
+  //console.log(body, "No Boddddddddy");
+  //console.log(author, "No Boddddddddy");
+  //console.log(id, "No Boddddddddy");
+  if (!body) {
+    // I ain't got no body..... badum tsh
+    console.log(body, "No Boddddddddy");
+    return Promise.reject({ status: 400, msg: "No content provided" });
+    //const error = { status: 400, msg: "No content provided" };
+    // next(error);
+  } //else if (!author) {
+    // if your name ain't down your not comin' in!
+    //return Promise.reject({ status: 400, msg: "No username provided" });
+    //const error = { status: 400, msg: "No username provided" };
+   // next(error);
+ // }
 
   return db
-    .query(`INSERT INTO comments 
+    .query(
+      `INSERT INTO comments 
         (article_id, author, body)
         VALUES 
         ($1, $2, $3)
-        RETURNING *;`, [id, author, comment])
+        RETURNING *;`,
+      [id, author, body]
+    )
     .then((result) => result.rows);
 }
 

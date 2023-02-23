@@ -30,14 +30,6 @@ exports.postArtCommentById = (request, response, next) => {
   const { article_id } = request.params;
   const { username, body } = request.body;
 
-  if (!body) { // I ain't got no body..... badum tsh
-    const error = { status: 400, msg: "No content provided" };
-    next(error);
-  } else if (!username) { // if your name ain't down your not comin' in!
-    const error = { status: 400, msg: "No username provided" };
-    next(error);
-  }
-
   selectArticleById(article_id)
     .then((result) => {
       // if we have a result here, don't care, as it hasn't already been rejected

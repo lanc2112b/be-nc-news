@@ -225,9 +225,21 @@ describe("Error handling tests", () => {
       });
   });
 
-  // client does a post requests to a valid article but forgets to send the comment
+  // client does a post requests to a valid article but forgets to send any content
   it("400: Empty object / no object passed in request.", () => {
-    const newComment = {};
+    const newComment = {}; // no 'body' or username, bad username as that's the first check.
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad username");
+      });
+  });
+
+  // client does a post requests to a valid article but forgets to send content
+  it("400: Empty object 'body' passed in request.", () => {
+    const newComment = {username: 'rogersop'}; // no 'body', reject with no content
     return request(app)
       .post("/api/articles/3/comments")
       .send(newComment)
@@ -263,7 +275,7 @@ describe("Error handling tests", () => {
       .send(newComment)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("No username provided");
+        expect(body.msg).toBe("Bad username");
       });
   });
 });
