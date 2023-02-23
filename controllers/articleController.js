@@ -17,8 +17,6 @@ exports.getArticles = (request, response, next) => {
 
   const { order, sort_by, topic } = request.query;
 
-  //console.log(order, sort_by, topic);
-
   selectAllArticles(order, sort_by, topic)
     .then((results) => {
       response.status(200).send({ articles: results });
