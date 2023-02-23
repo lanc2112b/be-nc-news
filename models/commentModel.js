@@ -1,5 +1,4 @@
 const db = require("../db/connection");
-/** Imports & BP above here */
 
 exports.selectCommentsByArticleId = (id) => {
   return db
@@ -11,8 +10,36 @@ exports.selectCommentsByArticleId = (id) => {
       [id]
     )
     .then((result) => {
-      /* Should return empty array, no reject */
+      return result.rows;
+    });
+};
 
+exports.insertCommentByArtId = (id, author, body) => {
+  if (!body) {
+    return Promise.reject({ status: 400, msg: "No content provided" });
+  }
+
+  return db
+    .query(
+      `INSERT INTO comments 
+        (article_id, author, body)
+        VALUES 
+        ($1, $2, $3)
+        RETURNING *;`,
+      [id, author, body]
+    )
+    .then((result) => {
+      return result.rows[0];
+    });
+};
+
+exports.selectUsernameByName = (username) => {
+  return db
+    .query(`SELECT * FROM users WHERE username = $1`, [username])
+    .then((result) => {
+      if (result.rows < 1) {
+        return Promise.reject({ status: 400, msg: "Bad username" });
+      }
       return result.rows;
     });
 };
