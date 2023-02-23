@@ -37,24 +37,43 @@ exports.selectAllArticles = () => {
 
 exports.updateArticleById = (id, update) => {
   
-  // prep data update
-  const nestedUpdates = [];
-  // create each [ "IDENT/COL = DATA", key, val] AS [inc_votes = 2] via 'format'
-  for (let key in update) {
-    nestedUpdates.push(format("%I = %L", key, update[key]));
+  const { inc_votes } = update;
+
+  if (id < 1) {
+    return Promise.reject({ status: 400, msg: "Invalid type for article id" });
   }
-  
-  let setStrings = nestedUpdates.join(",");
 
-  const queryString = format(
-    `UPDATE articles a
-     SET
-     %s            
-    WHERE a.article_id = %L
-    RETURNING *;`,
-    setStrings,
-    id
-  );
+  if (!update) {
+    return Promise.reject({ status: 400, msg: "No data provided" });
+  }
 
-  return db.query(queryString).then((result) => result.rows);
+  if (update.hasOwnProperty("inc_votes") === false) {
+    return Promise.reject({
+      status: 400,
+      msg: "Object does not contain correct key(s)",
+    });
+  } else if (typeof update.inc_votes !== "number") {
+    return Promise.reject({ status: 400, msg: "Invalid value type in object" });
+  }
+
+  //console.log(id);
+  return db
+    .query(
+      `UPDATE articles
+        SET
+          votes = votes + $1            
+        WHERE article_id = $2
+        RETURNING *;`,
+      [inc_votes, id]
+    )
+    .then((result) => {
+      if (result.rows < 1) {
+        return Promise.reject({ status: 404, msg: "Article Not Found" });
+      }
+      return result.rows;
+    })
+    .catch((error) => {
+      console.log(error);
+      next(error);
+    });
 }

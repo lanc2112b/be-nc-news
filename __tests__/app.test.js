@@ -63,7 +63,7 @@ describe("GET Endpoints", () => {
 
   describe("/api/articles/:article_id/comments (06)", () => {
     //returns comments for an article selected by id
-    // Has: comment_id, votes, created_at, author, body, article_id. 
+    // Has: comment_id, votes, created_at, author, body, article_id.
     it("200: Returns object with array containing all comments belonging to a specific article id", () => {
       return request(app)
         .get("/api/articles/3/comments") // currently 2 comments
@@ -82,14 +82,12 @@ describe("GET Endpoints", () => {
               article_id: expect.any(Number),
               created_at: expect.any(String),
               author: expect.any(String),
-              body: expect.any(String)
+              body: expect.any(String),
             });
           });
         });
     });
   });
-
-
 
   describe("/api/articles (04)", () => {
     // Returns a list of articles (as array of topic objects)
@@ -120,21 +118,18 @@ describe("GET Endpoints", () => {
     });
   });
 
-
-describe('PATCH Endpoints', () => {
-  
-  describe("PATCH /api/articles/:article_id (08)", () => {
-
-    it("200: Returns an object of updated article", () => {
-      const updateBody = { inc_votes: 2 }; // expect votes to be increment by 2
-      return request(app)
-        .patch("/api/articles/2")
-        .send(updateBody)
-        .expect(201)
-        .then((response) => {
-          const { article } = response.body;
-          expect(article).toBeInstanceOf(Object);
-          expect(article.votes).toBe(2); // whatever votes are + 2,  currently 0 in DB
+  describe("PATCH Endpoints", () => {
+    describe("PATCH /api/articles/:article_id (08)", () => {
+      it("200: Returns an object of updated article", () => {
+        const updateBody = { inc_votes: 2 }; // expect votes to be increment by 2
+        return request(app)
+          .patch("/api/articles/2")
+          .send(updateBody)
+          .expect(201)
+          .then((response) => {
+            const { article } = response.body;
+            expect(article).toBeInstanceOf(Object);
+            expect(article.votes).toBe(2); // whatever votes are + 2,  currently 0 in DB
             expect(article).toMatchObject({
               author: expect.any(String),
               title: expect.any(String),
@@ -144,17 +139,10 @@ describe('PATCH Endpoints', () => {
               votes: expect.any(Number),
               article_img_url: expect.any(String),
             });
-         
-        });
+          });
+      });
     });
   });
-
-});
-
-
-
-
-
 });
 
 describe("Error handling tests", () => {
@@ -180,4 +168,64 @@ describe("Error handling tests", () => {
       });
   });
 
+  // 1, client sends a patch with a negative number
+  it("404: PATCH /api/articles/:article_id (negative id provided)", () => {
+    const updateBody = { inc_votes: 2 };
+    return request(app)
+      .patch("/api/articles/-4")
+      .send(updateBody)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid type for article id");
+      });
+  });
+
+  // 2, client sends an object with the wrong key
+  it("400: PATCH /api/articles/:article_id (Wrong or non-existent key)", () => {
+    const updateBody = { kartoffel: 2 };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(updateBody)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Object does not contain correct key(s)");
+      });
+  });
+
+  // 3, client sends an object with the wrong data type = 'two'
+  it("400: PATCH /api/articles/:article_id (Wrong key value type)", () => {
+    const updateBody = { inc_votes: "two" };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(updateBody)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid value type in object");
+      });
+  });
+
+  // 4, client tries to patch an article that doesnt exist
+  it.skip("400: PATCH /api/articles/:article_id (No article found)", () => {
+    const updateBody = { inc_votes: 10 };
+    return request(app)
+      .patch("/api/articles/10000")
+      .send(updateBody)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article Not Found");
+      });
+  });
+  
+  // 5, client tries to patch an article_id that is not a number
+  // 
+  it.skip("400: PATCH /api/articles/:article_id (Bad Article ID provided)", () => {
+    const updateBody = { inc_votes: 10 };
+    return request(app)
+      .patch("/api/articles/potato")
+      .send(updateBody)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article Not Found");
+      });
+  });
 });
