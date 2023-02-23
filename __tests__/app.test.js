@@ -136,11 +136,11 @@ describe("GET Endpoints", () => {
         .then((response) => {
           const { articles } = response.body;
           expect(articles).toBeInstanceOf(Array);
-          expect(articles).toHaveLength(1); // 1 cat article
+          expect(articles).toHaveLength(1); 
           expect(articles).toBeSorted({ key: "created_at", descending: true }); //default
           articles.forEach((article) => {
-            expect(article.author).toBe('rogersop'); // this has been here the whole time
-            expect(article.topic).toBe("cats"); // and this... 
+            expect(article.author).toBe('rogersop'); 
+            expect(article.topic).toBe("cats"); 
             expect(article).toMatchObject({
               title: expect.any(String),
               article_id: expect.any(Number),

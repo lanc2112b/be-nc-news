@@ -1,48 +1,56 @@
-const db = require('../db/connection');
-const format = require('pg-format');
+const db = require("../db/connection");
+const format = require("pg-format");
 /** Imports & BP above here */
 
 exports.selectArticleById = (id) => {
-
-  return db.query(`SELECT author, title, article_id, body, topic, created_at, votes, article_img_url
+  return db
+    .query(
+      `SELECT author, title, article_id, body, topic, created_at, votes, article_img_url
                   FROM articles
-                  WHERE article_id = $1 ;`, [id])
+                  WHERE article_id = $1 ;`,
+      [id]
+    )
     .then((result) => {
-
       if (result.rowCount < 1) {
         return Promise.reject({ status: 404, msg: "Article Not Found" });
       }
       return result.rows[0];
     });
-}
+};
 
-exports.selectAllArticles = (order = 'desc', sort = 'created_at', topic = null) => {
-  
+exports.selectAllArticles = (
+  order = "desc",
+  sort = "created_at",
+  topic = null
+) => {
   // topic = topic column
   // sort_by = any column
   // default = created_at
   // order = asc / desc
   // default desc
+
   const validSortColumns = [
-     "article_id",
-     "title",
-     "topic",
-     "author",
-     "body",
-     "created_at",
-     "votes",
-     "article_image_url",
-   ];
- 
-   const validOrderOptions = ["asc", "desc"];
- 
-   if (!validOrderOptions.includes(order.toLowerCase())) {
-     return Promise.reject({ status: 400, msg: "Bad Request: order direction" });
-   }
- 
-   if (sort && !validSortColumns.includes(sort.toLowerCase())) {
-     return Promise.reject({ status: 400, msg: "Bad Request: sort by" });
-   }
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "article_image_url",
+  ];
+
+  const validOrderOptions = ["asc", "desc"];
+
+  if (!validOrderOptions.includes(order.toLowerCase())) {
+    return Promise.reject({ status: 400, msg: "Bad Request: order direction" });
+  }
+
+  sort = sort.toLowerCase();
+
+  if (sort && !validSortColumns.includes(sort)) {
+    return Promise.reject({ status: 400, msg: "Bad Request: sort by" });
+  }
 
   const sortQuery = ` ORDER BY ${sort} ${order}`;
 
@@ -68,17 +76,15 @@ exports.selectAllArticles = (order = 'desc', sort = 'created_at', topic = null) 
       }
       return result.rows;
     });
-    
 };
 
 exports.updateArticleById = (id, update) => {
-  
   const { inc_votes } = update;
 
   if (id < 1) {
     return Promise.reject({ status: 400, msg: "Invalid type for article id" });
   }
-    
+
   if (!update) {
     return Promise.reject({ status: 400, msg: "No data provided" });
   }
@@ -106,6 +112,5 @@ exports.updateArticleById = (id, update) => {
         return Promise.reject({ status: 404, msg: "Article Not Found" });
       }
       return result.rows[0];
-    })
-
-}
+    });
+};
