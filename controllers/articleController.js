@@ -1,5 +1,4 @@
 const { selectArticleById, selectAllArticles  } = require('../models/articleModel');
-/** Imports & BP above here */
 
 exports.getArticleById = (request, response, next) => {
   

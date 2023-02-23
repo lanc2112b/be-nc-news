@@ -6,8 +6,6 @@ const {
 
 const { selectArticleById } = require('../models/articleModel');
 
-/** hmmm, comments belong to articles, should possibly be part of articles?  */
-
 exports.getArtCommentsById = (request, response, next) => {
 
   const { article_id } = request.params;
@@ -32,18 +30,16 @@ exports.postArtCommentById = (request, response, next) => {
 
   selectArticleById(article_id)
     .then((result) => {
-      // if we have a result here, don't care, as it hasn't already been rejected
-      // article must exist, so:
-      // check for author next
-      return selectUsernameByName(username); // return or reject in model
+
+      return selectUsernameByName(username);
     }) 
     .then((result) => { 
 
-      return insertCommentByArtId(article_id, username, body); // return or reject in model
+      return insertCommentByArtId(article_id, username, body);
     })
     .then((result) => {
       
-      response.status(201).send({ comment: result[0] }); // respond with the newly inserted row.
+      response.status(201).send({ comment: result });
     })
     .catch((error) => {
       next(error);

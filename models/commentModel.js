@@ -1,8 +1,6 @@
 const db = require("../db/connection");
-/** Imports & BP above here */
 
 exports.selectCommentsByArticleId = (id) => {
-
   return db
     .query(
       `SELECT comment_id, author, votes, created_at, body, article_id
@@ -12,28 +10,14 @@ exports.selectCommentsByArticleId = (id) => {
       [id]
     )
     .then((result) => {
-      /* Should return empty array, no reject */
-
       return result.rows;
     });
 };
 
 exports.insertCommentByArtId = (id, author, body) => {
-  //console.log(body, "No Boddddddddy");
-  //console.log(author, "No Boddddddddy");
-  //console.log(id, "No Boddddddddy");
   if (!body) {
-    // I ain't got no body..... badum tsh
-    console.log(body, "No Boddddddddy");
     return Promise.reject({ status: 400, msg: "No content provided" });
-    //const error = { status: 400, msg: "No content provided" };
-    // next(error);
-  } //else if (!author) {
-    // if your name ain't down your not comin' in!
-    //return Promise.reject({ status: 400, msg: "No username provided" });
-    //const error = { status: 400, msg: "No username provided" };
-   // next(error);
- // }
+  }
 
   return db
     .query(
@@ -44,16 +28,18 @@ exports.insertCommentByArtId = (id, author, body) => {
         RETURNING *;`,
       [id, author, body]
     )
-    .then((result) => result.rows);
-}
+    .then((result) => {
+      return result.rows[0];
+    });
+};
 
-// strictly a user model check TODO: move to user model in t09 after PR resolves
 exports.selectUsernameByName = (username) => {
-  return db.query(`SELECT * FROM users WHERE username = $1`, [username])
+  return db
+    .query(`SELECT * FROM users WHERE username = $1`, [username])
     .then((result) => {
       if (result.rows < 1) {
-        return Promise.reject({status: 400, msg: 'Bad username'});
+        return Promise.reject({ status: 400, msg: "Bad username" });
       }
       return result.rows;
     });
-}
+};

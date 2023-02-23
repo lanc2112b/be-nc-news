@@ -6,8 +6,6 @@ const seed = require("../db/seeds/seed");
 
 const app = require("../app.js");
 
-/** Imports & BP above here */
-
 beforeEach(() => {
   return seed(testData);
 });
@@ -19,8 +17,7 @@ afterAll(() => {
 describe("GET Endpoints", () => {
   
   describe("GET /api/topics (03)", () => {
-    // Returns a list of topics (as array of topic objects)
-    // Each topic object has properties 'slug' & 'description'
+
     it("200: Returns an array of objects containing topic & description", () => {
       return request(app)
         .get("/api/topics")
@@ -28,7 +25,7 @@ describe("GET Endpoints", () => {
         .then((response) => {
           const { topics } = response.body;
           expect(topics).toBeInstanceOf(Array);
-          expect(topics).toHaveLength(3); // some length (count sql rows), arrg, mitch is a user here, run away!
+          expect(topics).toHaveLength(3);
           topics.forEach((topic) => {
             expect(topic).toMatchObject({
               slug: expect.any(String),
@@ -40,7 +37,6 @@ describe("GET Endpoints", () => {
   });
 
   describe("GET /api/articles/ (05)", () => {
-    //returns an article slected by id
     it("200: Returns object with a single article, selected by id", () => {
       return request(app)
         .get("/api/articles/2")
@@ -52,7 +48,7 @@ describe("GET Endpoints", () => {
           expect(article).toMatchObject({
             author: expect.any(String),
             title: expect.any(String),
-            article_id: expect.any(Number), //FIXME: DONE, additional expect article_id to be 2
+            article_id: expect.any(Number),
             topic: expect.any(String),
             created_at: expect.any(String),
             votes: expect.any(Number),
@@ -63,18 +59,15 @@ describe("GET Endpoints", () => {
   });
 
   describe("GET /api/articles/:article_id/comments (06)", () => {
-    //returns comments for an article selected by id
-    // Has: comment_id, votes, created_at, author, body, article_id. 
     it("200: Returns object with array containing all comments belonging to a specific article id", () => {
       return request(app)
-        .get("/api/articles/3/comments") // currently 2 comments
+        .get("/api/articles/3/comments")
         .expect(200)
         .then((response) => {
           const { comments } = response.body;
-          expect(comments).toBeInstanceOf(Array); //Array of comment objects
+          expect(comments).toBeInstanceOf(Array);
           expect(comments).toHaveLength(2);
-          expect(comments).toBeSorted({ key: "created_at", descending: true }); // desc recent first
-          // check each obj in array
+          expect(comments).toBeSorted({ key: "created_at", descending: true });
           comments.forEach((comment) => {
             expect(comment.article_id).toBe(3);
             expect(comment).toMatchObject({
@@ -93,9 +86,6 @@ describe("GET Endpoints", () => {
 
 
   describe("GET /api/articles (04)", () => {
-    // Returns a list of articles (as array of topic objects)
-    // Returns a count of comments belonging to the article as comment_count
-    // array is sorted by date, ascending
     it("200: Returns an array of objects containing articles", () => {
       return request(app)
         .get("/api/articles")
@@ -114,7 +104,7 @@ describe("GET Endpoints", () => {
               created_at: expect.any(String),
               votes: expect.any(Number),
               article_img_url: expect.any(String),
-              comment_count: expect.any(String), // Counted comments on join
+              comment_count: expect.any(String), 
             });
           });
         });
@@ -137,11 +127,10 @@ describe("POST Endpoints", () => {
         .expect(201)
         .then((response) => {
           const { comment } = response.body;
-          expect(comment).toBeInstanceOf(Object); //Array of comment objects
+          expect(comment).toBeInstanceOf(Object);
           expect(comment.article_id).toBe(3);
           expect(comment.author).toBe('rogersop');
           expect(comment.body).toBe('Some new comment for article with id: 3');
-          // extracted some of the properties to be specifics.
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
             votes: expect.any(Number),
@@ -182,7 +171,7 @@ describe("Error handling tests", () => {
       });
   });
 
-  /* Ok Beth's bad url is breaking everything, or at least my handling of it is! */
+
   it("400: Invalid id type supplied to /api/articles/.", () => {
     return request(app)
       .get("/api/articles/banana")
@@ -192,9 +181,6 @@ describe("Error handling tests", () => {
       });
   });
 
-  //* client posts a comment to an article that doesnt exist
-  // Already handled in postArtCommentById() with selectArticleById(article_id)
-  // It's rejected with error or exists
   it("404: Article not found on POST new article.", () => {
     const newComment = {
       username: "rogersop",
@@ -209,8 +195,6 @@ describe("Error handling tests", () => {
       });
   });
 
-  //client posts a comment to an article id that is not a number
-  // Handled in the error handler as per GET /api/articles/banana
   it("400: Invalid type passed as article_id.", () => {
     const newComment = {
       username: "rogersop",
@@ -225,9 +209,8 @@ describe("Error handling tests", () => {
       });
   });
 
-  // client does a post requests to a valid article but forgets to send any content
   it("400: Empty object / no object passed in request.", () => {
-    const newComment = {}; // no 'body' or username, bad username as that's the first check.
+    const newComment = {}; 
     return request(app)
       .post("/api/articles/3/comments")
       .send(newComment)
@@ -237,9 +220,8 @@ describe("Error handling tests", () => {
       });
   });
 
-  // client does a post requests to a valid article but forgets to send content
   it("400: Empty object 'body' passed in request.", () => {
-    const newComment = {username: 'rogersop'}; // no 'body', reject with no content
+    const newComment = {username: 'rogersop'}; 
     return request(app)
       .post("/api/articles/3/comments")
       .send(newComment)
@@ -249,7 +231,6 @@ describe("Error handling tests", () => {
       });
   });
 
-  // client posts a comment but the username doesn't exist in your database
   it("400: Invalid user provided.", () => {
     const newComment = {
       username: "twsbidiamond580",
@@ -264,7 +245,7 @@ describe("Error handling tests", () => {
       });
   });
 
-  // client forgets to provide a username
+ 
   it("400: No user provided.", () => {
     const newComment = {
       username: "",
