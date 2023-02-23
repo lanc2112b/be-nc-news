@@ -34,9 +34,16 @@ app.post("/api/articles/:article_id/comments", postArtCommentById);
 
 app.delete("/api/comments/:comment_id", delCommentById);
 
-app.get('/api/articles/:article_id', getArticleById);
-
 app.patch("/api/articles/:article_id", patchArticleById);
+
+
+/*const allRoutes = [];
+app._router.stack.forEach(function (r) {
+  if (r.route && r.route.path) {
+    allRoutes.push(r.route.path);
+  }
+});
+*/
 
 /** end routes */
 /** error handlers */
