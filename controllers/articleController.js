@@ -1,6 +1,4 @@
 const { selectArticleById, selectAllArticles, updateArticleById  } = require('../models/articleModel');
-/** Imports & BP above here */
-//const { selectArticleById, selectAllArticles  } = require('../models/articleModel'); //merge conf
 
 exports.getArticleById = (request, response, next) => {
   
@@ -8,7 +6,7 @@ exports.getArticleById = (request, response, next) => {
 
   selectArticleById(article_id)
     .then((result) => {
-      response.status(200).send({ article: result[0] });
+      response.status(200).send({ article: result });
     })
     .catch((error) => {
       next(error);
@@ -33,7 +31,7 @@ exports.patchArticleById = (request, response, next) => {
 
     updateArticleById(article_id, updateData)
       .then((result) => {
-        response.status(201).send({ article: result[0] });
+        response.status(201).send({ article: result });
       })
       .catch((error) => {
         next(error);

@@ -12,8 +12,7 @@ exports.selectArticleById = (id) => {
       if (result.rowCount < 1) {
         return Promise.reject({ status: 404, msg: "Article Not Found" });
       }
-
-      return result.rows;
+      return result.rows[0];
     });
 }
 
@@ -39,16 +38,13 @@ exports.updateArticleById = (id, update) => {
   
   const { inc_votes } = update;
 
-  //console.log(typeof +id, "<< ID type. ", id, "Current ID ");
-
   if (id < 1) {
     return Promise.reject({ status: 400, msg: "Invalid type for article id" });
-  } /*else if (typeof +id !== "number") {
-    return Promise.reject({ status: 400, msg: "Invalid type for article id" });
-  }*/
-    if (!update) {
-      return Promise.reject({ status: 400, msg: "No data provided" });
-    }
+  }
+    
+  if (!update) {
+    return Promise.reject({ status: 400, msg: "No data provided" });
+  }
 
   if (update.hasOwnProperty("inc_votes") === false) {
     return Promise.reject({
@@ -59,7 +55,6 @@ exports.updateArticleById = (id, update) => {
     return Promise.reject({ status: 400, msg: "Invalid value type in object" });
   }
 
-  //console.log(id);
   return db
     .query(
       `UPDATE articles
@@ -70,13 +65,10 @@ exports.updateArticleById = (id, update) => {
       [inc_votes, id]
     )
     .then((result) => {
-      //if (result.rows < 1) {
-        //return Promise.reject({ status: 404, msg: "Article Not Found" });
-      //}
-      return result.rows;
+      if (result.rows < 1) {
+        return Promise.reject({ status: 404, msg: "Article Not Found" });
+      }
+      return result.rows[0];
     })
-    .catch((error) => {
-      //console.log(error);
-      next(error);
-    });
+
 }
