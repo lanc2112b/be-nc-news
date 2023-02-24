@@ -9,12 +9,14 @@ exports.selectAllUsers = () => {
 }
 
 exports.selectUsernameByName = (username) => {
+
   return db
-    .query(`SELECT * FROM users WHERE username = $1`, [username])
+    .query(`SELECT * FROM users WHERE username = $1;`, [username])
     .then((result) => {
+      
       if (result.rows < 1) {
-        return Promise.reject({ status: 400, msg: "Bad username" });
+        return Promise.reject({ status: 404, msg: "Username not found" });
       }
-      return result.rows;
+      return result.rows[0];
     });
 };
