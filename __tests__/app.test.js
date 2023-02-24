@@ -14,6 +14,31 @@ afterAll(() => {
   db.end();
 });
 
+describe('API Description', () => {
+  describe('GET /api', () => {
+    it("200: Returns an object of api endpoints and descriptions", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then((response) => {
+          const { endpoints } = response.body;
+          expect(endpoints).toBeInstanceOf(Object);
+          expect(endpoints).toMatchObject({
+            "GET /api": expect.any(Object),
+            "GET /api/topics": expect.any(Object),
+            "GET /api/articles": expect.any(Object),
+            "GET /api/users": expect.any(Object),
+            "GET /api/articles/:article_id": expect.any(Object),
+            "GET /api/articles/:article_id/comments": expect.any(Object),
+            "POST /api/articles/:article_id/comments": expect.any(Object),
+            "DELETE /api/comments/:comment_id": expect.any(Object),
+            "PATCH /api/articles/:article_id": expect.any(Object)
+          });
+        });
+    });
+  });
+});
+
 describe("GET Endpoints", () => {
   describe("GET /api/topics (03)", () => {
     it("200: Returns an array of objects containing topic & description", () => {
