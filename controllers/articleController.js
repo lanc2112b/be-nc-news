@@ -1,4 +1,11 @@
-const { selectArticleById, selectAllArticles, updateArticleById  } = require('../models/articleModel');
+const {
+  selectArticleById,
+  selectAllArticles,
+  updateArticleById,
+  insertNewArticle,
+} = require("../models/articleModel");
+
+const { selectUsernameByName } = require('../models/userModel');
 
 exports.getArticleById = (request, response, next) => {
   
@@ -25,6 +32,24 @@ exports.getArticles = (request, response, next) => {
       next(error);
     });
 };
+
+exports.postNewArticle = (request, response, next) => {
+  
+  const { author, title, body, topic, article_img_url } = request.body;
+  
+  selectUsernameByName(author)
+    .then((result) => {
+      // if valid user, else already rejected
+      /*** make a call to check & add topic if the supplied doesn't exist after 22-post-topics */
+      return insertNewArticle(author, title, body, topic, article_img_url);
+    })
+    .then((result) => {
+      response.status(201).send({ article: result });
+    })
+    .catch((error) => {
+      next(error);
+    });
+}
 
 exports.patchArticleById = (request, response, next) => {
 
