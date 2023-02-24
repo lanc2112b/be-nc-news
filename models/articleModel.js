@@ -74,6 +74,41 @@ exports.selectAllArticles = (order = "desc", sort = "created_at", topic = null) 
     });
 };
 
+exports.insertNewArticle = (author, title, content, topic, artImage = null) => {
+
+  //username exists or wouldn't have got to here.
+  if (!title) {
+    return Promise.reject({ status: 400, msg: "Missing title" });
+  }
+  if (!content) {
+    return Promise.reject({ status: 400, msg: "Missing content" });
+  }
+  if (!topic) {
+    return Promise.reject({ status: 400, msg: "Missing topic" });
+  }
+
+  artImage =
+    artImage ??
+    "https://images.pexels.com/photos/2085831/pexels-photo-2085831.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
+
+  // got this far? Great.
+
+  return db
+    .query(`INSERT INTO articles
+            (author, title, topic, body, article_img_url)
+            VALUES
+            ($1, $2, $3, $4, $5)
+            RETURNING *;`,
+            [author, title, topic, content, artImage]
+    )
+    .then((result) => {
+      // using the RETURNING *; comment_count will be 0 at this stage, set manually before returning.
+      result.rows[0].comment_count = 0;
+      return result.rows[0];
+    });
+  
+};
+
 exports.updateArticleById = (id, update) => {
   const { inc_votes } = update;
 

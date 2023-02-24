@@ -70,7 +70,7 @@ describe("GET Endpoints", () => {
     });
   });
 
-  describe("/api/users (09)", () => {
+  describe("GET /api/users (09)", () => {
     it("200: Returns an array of objects containing users", () => {
       return request(app)
         .get("/api/users")
@@ -90,7 +90,7 @@ describe("GET Endpoints", () => {
     });
   });
 
-  describe("/api/users/:username (17)", () => {
+  describe("GET /api/users/:username (17)", () => {
     it("200: Returns an object containing specified user by ID", () => {
       return request(app)
         .get("/api/users/rogersop")
@@ -445,6 +445,41 @@ describe("POST Endpoints", () => {
         });
     });
   });
+
+  describe("POST: /api/articles/ (19)", () => {
+    const newArticle = {
+      author: "rogersop",
+      title: "Got cats?",
+      body: "Something to do with some cats evidently",
+      topic: "cats",
+      article_img_url:
+        "https://images.pexels.com/photos/774731/pexels-photo-774731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    };
+
+    it("Adds a new article", () => {
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(201)
+        .then((response) => {
+          const { article } = response.body;
+          expect(article).toBeInstanceOf(Object);
+          expect(article.article_id).toBe(13);
+          expect(article.author).toBe("rogersop");
+          expect(article.title).toBe("Got cats?");
+          expect(article.votes).toBe(0);
+          expect(article.topic).toBe("cats");
+          expect(article.comment_count).toBe(0);
+          expect(article.article_img_url).toBe(
+            "https://images.pexels.com/photos/774731/pexels-photo-774731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+          );
+          expect(article.body).toBe("Something to do with some cats evidently");
+          expect(article).toMatchObject({
+            created_at: expect.any(String),
+          });
+        });
+    });
+  });
 });
 
 describe("DELETE Endpoints", () => {
@@ -557,7 +592,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("4004 Empty object / no object passed in request.", () => {
+    it("404 Empty object / no object passed in request.", () => {
       const newComment = {};
       return request(app)
         .post("/api/articles/3/comments")
@@ -620,6 +655,90 @@ describe("Error handling tests", () => {
           expect(body.msg).toBe("Username not found");
         });
     });
+
+    it("404: POST /api/articles/ No user provided.", () => {
+      const newArticle = {
+        author: "",
+        title: "Got cats?",
+        body: "Something to do with some cats evidently",
+        topic: "cats",
+        article_img_url:
+          "https://images.pexels.com/photos/774731/pexels-photo-774731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Username not found");
+        });
+    });
+
+    it("400: POST /api/articles/ No title provided.", () => {
+      const newArticle = {
+        author: "rogersop",
+        title: "",
+        body: "Something to do with some cats evidently",
+        topic: "cats",
+        article_img_url:
+          "https://images.pexels.com/photos/774731/pexels-photo-774731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Missing title");
+        });
+    });
+
+    it("400: POST /api/articles/ No body provided.", () => {
+      const newArticle = {
+        author: "rogersop",
+        title: "Got cats?",
+        body: "",
+        topic: "cats",
+        article_img_url:
+          "https://images.pexels.com/photos/774731/pexels-photo-774731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Missing content");
+        });
+    });
+
+    it("400: POST /api/articles/ No topic provided.", () => {
+      const newArticle = {
+        author: "rogersop",
+        title: "Got cats?",
+        body: "Something to do with some cats evidently",
+        topic: "",
+        article_img_url:
+          "https://images.pexels.com/photos/774731/pexels-photo-774731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      };
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Missing topic");
+        });
+    });
+
+    it("404: POST /api/articles/ Empty object OR no content.", () => {
+      const newArticle = {};
+      return request(app)
+        .post("/api/articles")
+        .send(newArticle)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Username not found"); // Nothing provided, skip to first missing item
+        });
+    });
+
   });
 
   describe("PATCH Error Handlers", () => {
