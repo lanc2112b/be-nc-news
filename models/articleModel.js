@@ -22,8 +22,7 @@ exports.selectArticleById = (id) => {
     });
 };
 
-exports.selectAllArticles = (order = "desc", sort = "created_at", topic = null) => {
-
+exports.selectAllArticles = (order = "desc", sort = "created_at", topic = null, limit = 10, page = 1) => {
 
   const validSortColumns = [
     "article_id",
@@ -42,6 +41,14 @@ exports.selectAllArticles = (order = "desc", sort = "created_at", topic = null) 
     return Promise.reject({ status: 400, msg: "Bad Request: order direction" });
   }
 
+  if (isNaN(limit)) {
+    return Promise.reject({ status: 400, msg: "Bad Request: limit value type" });
+  }
+
+  if (isNaN(page)) {
+    return Promise.reject({ status: 400, msg: "Bad Request: page value type" });
+  }
+
   sort = sort.toLowerCase();
 
   if (sort && !validSortColumns.includes(sort)) {
@@ -50,21 +57,35 @@ exports.selectAllArticles = (order = "desc", sort = "created_at", topic = null) 
 
   const sortQuery = ` ORDER BY ${sort} ${order}`;
 
-  const whereTopicQuery = topic ? ` WHERE topic = $1` : ``;
+  const whereTopicQuery = topic ? ` WHERE topic = $3` : ``;
+  
+  const limitStr = ` LIMIT $1`;
+  
+  const offsetStr = ` OFFSET $2`; 
 
-  const whereArray = topic ? [topic] : "";
+  const offSetVal = page > 1 ? limit * (page - 1) : 0;
+  
+  const valsArray = [];
+
+  valsArray.push(limit);
+  valsArray.push(offSetVal);
+  if (topic) {
+    valsArray.push(topic);
+  }
 
   return db
     .query(
       `SELECT a.author, a.title, a.article_id, a.topic, 
-        a.created_at, a.votes, a.article_img_url, COUNT(c.comment_id) AS comment_count
-        FROM articles a
+        a.created_at, a.votes, a.article_img_url, COUNT(c.comment_id) AS comment_count,
+        count(*) OVER() AS total_count
+         FROM articles a
         LEFT JOIN comments c
         ON c.article_id = a.article_id
         ${whereTopicQuery}
         GROUP BY a.article_id
-        ${sortQuery};`,
-      whereArray
+        ${sortQuery}
+        ${limitStr} ${offsetStr};`,
+      valsArray
     )
     .then((result) => {
       if (result.rows < 1) {

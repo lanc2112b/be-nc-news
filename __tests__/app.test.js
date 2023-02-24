@@ -130,6 +130,96 @@ describe("GET Endpoints", () => {
     });
   });
 
+  describe("GET /api/articles (20) L=5, P=1", () => {
+    it("200: Returns an array of objects containing articles with limit, page, & totals", () => {
+      return request(app)
+        .get("/api/articles?limit=5&p=1&sort_by=article_id&order=asc")
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(5);
+          expect(articles[0].article_id).toBe(1);
+          expect(articles[4].article_id).toBe(5);
+          expect(articles).toBeSorted({ key: "article_id", ascending: true }); // leave default
+          articles.forEach((article) => {
+            expect(article.total_count).toBe('12');
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+
+    describe("GET /api/articles (20) L=6, P=2", () => {
+      it("200: Returns an array of objects containing articles with limit, page, & totals", () => {
+        return request(app)
+          .get("/api/articles?limit=6&p=2&sort_by=article_id&order=asc")
+          .expect(200)
+          .then((response) => {
+            const { articles } = response.body;
+            expect(articles).toBeInstanceOf(Array);
+            expect(articles).toHaveLength(6);
+            expect(articles[0].article_id).toBe(7);
+            expect(articles[5].article_id).toBe(12);
+            expect(articles).toBeSorted({ key: "article_id", ascending: true }); // leave default
+            articles.forEach((article) => {
+              expect(article.total_count).toBe("12");
+              expect(article).toMatchObject({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(String),
+              });
+            });
+          });
+      });
+    });
+  
+      describe("GET /api/articles (20) L=default(10), P=2, default sort", () => {
+        it("200: Returns an array of objects containing articles with limit, page, & totals", () => {
+          return request(app)
+            .get("/api/articles?p=2")
+            .expect(200)
+            .then((response) => {
+              const { articles } = response.body;
+              expect(articles).toBeInstanceOf(Array);
+              expect(articles).toHaveLength(2);
+              expect(articles[0].article_id).toBe(11);
+              expect(articles[1].article_id).toBe(7);
+              expect(articles).toBeSorted({
+                key: "created_at",
+                descending: true,
+              }); // leave default
+              articles.forEach((article) => {
+                expect(article.total_count).toBe("12");
+                expect(article).toMatchObject({
+                  author: expect.any(String),
+                  title: expect.any(String),
+                  article_id: expect.any(Number),
+                  topic: expect.any(String),
+                  created_at: expect.any(String),
+                  votes: expect.any(Number),
+                  article_img_url: expect.any(String),
+                  comment_count: expect.any(String),
+                });
+              });
+            });
+        });
+      });
+
   describe("GET /api/articles/ (11)", () => {
     it("200: Returns object with a single article, selected by id to include comment_count", () => {
       return request(app)
@@ -181,12 +271,12 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (04)", () => {
     it("200: Returns an array of objects containing articles", () => {
       return request(app)
-        .get("/api/articles")
+        .get("/api/articles?limit=20")
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
           expect(articles).toBeInstanceOf(Array);
-          expect(articles).toHaveLength(12);
+          expect(articles).toHaveLength(12); // new default limit
           expect(articles).toBeSorted({ key: "created_at", descending: true });
           articles.forEach((article) => {
             expect(article).toMatchObject({
@@ -207,7 +297,7 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (10) filtered by queries", () => {
     it("200: Returns an array of objects containing articles filtered by topic > cats", () => {
       return request(app)
-        .get("/api/articles?topic=cats") // has one cat article
+        .get("/api/articles?topic=cats&limit=20") // has one cat article
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
@@ -234,7 +324,7 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (10) filtered by queries", () => {
     it("200: Returns an array of objects containing articles filtered by topic > mitch", () => {
       return request(app)
-        .get("/api/articles?topic=mitch")
+        .get("/api/articles?topic=mitch&limit=20")
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
@@ -260,7 +350,7 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (10) filtered by queries", () => {
     it("200: Returns an array of objects containing articles sorted by column > title", () => {
       return request(app)
-        .get("/api/articles?sort_by=title") // has one cat article
+        .get("/api/articles?sort_by=title&limit=20") // has one cat article
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
@@ -286,7 +376,7 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (10) filtered by queries", () => {
     it("200: Returns an array of objects containing articles sorted > desc", () => {
       return request(app)
-        .get("/api/articles?order=desc")
+        .get("/api/articles?order=desc&limit=20")
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
@@ -312,7 +402,7 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (10) filtered by queries", () => {
     it("200: Returns an array of objects containing articles sorted by column > title", () => {
       return request(app)
-        .get("/api/articles?sort_by=title&order=asc")
+        .get("/api/articles?sort_by=title&order=asc&limit=20")
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
@@ -338,7 +428,7 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (10) filtered by queries", () => {
     it("200: Returns an array of objects containing articles topic=mitch, sort_by=votes, order=asc", () => {
       return request(app)
-        .get("/api/articles?topic=mitch&sort_by=votes&order=asc")
+        .get("/api/articles?topic=mitch&sort_by=votes&order=asc&limit=20")
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
@@ -387,15 +477,6 @@ describe("PATCH Endpoints", () => {
     });
   });
 
-  /**
-   * {"comment_id":162,
-   * "author":"grumpy19",
-   * "votes":14,
-   * "created_at":"2020-10-03T19:22:00.000Z",
-   * "body":"Et suscipit maxime sit sunt consequuntur consequatur fugiat molestias.
-   * Et quis enim vero.",
-   * "article_id":2}
-   */
   describe("PATCH /api/comments/:comment_id (08)", () => {
     it("200: Returns an object of updated comment", () => {
       const updateBody = { inc_votes: 4 };
@@ -564,6 +645,24 @@ describe("Error handling tests", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Bad Request: order direction");
+        });
+    });
+
+    it("400: Bad limit value to /api/articles/. (20)", () => {
+      return request(app)
+        .get("/api/articles?limit=dave")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request: limit value type");
+        });
+    });
+
+    it("400: Bad page value to /api/articles/. (20)", () => {
+      return request(app)
+        .get("/api/articles?limit=10&p=bob")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request: page value type");
         });
     });
 
