@@ -15,7 +15,6 @@ afterAll(() => {
 });
 
 describe("GET Endpoints", () => {
-
   describe("GET /  (Service is alive)", () => {
     it("200: Returns a msg of API Running... ", () => {
       return request(app)
@@ -52,9 +51,6 @@ describe("GET Endpoints", () => {
     });
   });
 
-
-
-
   describe("GET /api/topics (03)", () => {
     it("200: Returns an array of objects containing topic & description", () => {
       return request(app)
@@ -75,7 +71,6 @@ describe("GET Endpoints", () => {
   });
 
   describe("/api/users (09)", () => {
-
     it("200: Returns an array of objects containing users", () => {
       return request(app)
         .get("/api/users")
@@ -105,7 +100,9 @@ describe("GET Endpoints", () => {
           expect(user).toBeInstanceOf(Object);
           expect(user.username).toBe("rogersop");
           expect(user.name).toBe("paul");
-          expect(user.avatar_url).toBe("https://avatars2.githubusercontent.com/u/24394918?s=400&v=4");
+          expect(user.avatar_url).toBe(
+            "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+          );
         });
     });
   });
@@ -119,16 +116,16 @@ describe("GET Endpoints", () => {
           const { article } = response.body;
           expect(article).toBeInstanceOf(Object);
           expect(article.article_id).toBe(3);
-            expect(article).toMatchObject({
-              article_id: expect.any(Number),
-              created_at: expect.any(String),
-              title: expect.any(String),
-              author: expect.any(String),
-              votes: expect.any(Number),
-              topic: expect.any(String),
-              article_img_url: expect.any(String),
-              comment_count: expect.any(String),
-            });
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            created_at: expect.any(String),
+            title: expect.any(String),
+            author: expect.any(String),
+            votes: expect.any(Number),
+            topic: expect.any(String),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
         });
     });
   });
@@ -215,11 +212,11 @@ describe("GET Endpoints", () => {
         .then((response) => {
           const { articles } = response.body;
           expect(articles).toBeInstanceOf(Array);
-          expect(articles).toHaveLength(1); 
+          expect(articles).toHaveLength(1);
           expect(articles).toBeSorted({ key: "created_at", descending: true }); //default
           articles.forEach((article) => {
-            expect(article.author).toBe('rogersop'); 
-            expect(article.topic).toBe("cats"); 
+            expect(article.author).toBe("rogersop");
+            expect(article.topic).toBe("cats");
             expect(article).toMatchObject({
               title: expect.any(String),
               article_id: expect.any(Number),
@@ -237,7 +234,7 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (10) filtered by queries", () => {
     it("200: Returns an array of objects containing articles filtered by topic > mitch", () => {
       return request(app)
-        .get("/api/articles?topic=mitch") 
+        .get("/api/articles?topic=mitch")
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
@@ -245,16 +242,16 @@ describe("GET Endpoints", () => {
           expect(articles).toHaveLength(11); // 11 mitch articles
           expect(articles).toBeSorted({ key: "created_at", descending: true }); //default
           articles.forEach((article) => {
-            expect(article.topic).toBe('mitch');
-              expect(article).toMatchObject({
-                author: expect.any(String),
-                title: expect.any(String),
-                article_id: expect.any(Number),
-                created_at: expect.any(String),
-                votes: expect.any(Number),
-                article_img_url: expect.any(String),
-                comment_count: expect.any(String),
-              });
+            expect(article.topic).toBe("mitch");
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
           });
         });
     });
@@ -289,7 +286,7 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (10) filtered by queries", () => {
     it("200: Returns an array of objects containing articles sorted > desc", () => {
       return request(app)
-        .get("/api/articles?order=desc") 
+        .get("/api/articles?order=desc")
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
@@ -323,7 +320,7 @@ describe("GET Endpoints", () => {
           expect(articles).toHaveLength(12); // 11 mitch articles + 1 cat
           expect(articles).toBeSorted({ key: "title", ascending: true });
           articles.forEach((article) => {
-              expect(article).toMatchObject({
+            expect(article).toMatchObject({
               author: expect.any(String),
               topic: expect.any(String),
               title: expect.any(String),
@@ -341,7 +338,7 @@ describe("GET Endpoints", () => {
   describe("GET /api/articles (10) filtered by queries", () => {
     it("200: Returns an array of objects containing articles topic=mitch, sort_by=votes, order=asc", () => {
       return request(app)
-        .get("/api/articles?topic=mitch&sort_by=votes&order=asc") 
+        .get("/api/articles?topic=mitch&sort_by=votes&order=asc")
         .expect(200)
         .then((response) => {
           const { articles } = response.body;
@@ -363,9 +360,6 @@ describe("GET Endpoints", () => {
         });
     });
   });
-
-
-
 }); // END GET
 
 describe("PATCH Endpoints", () => {
@@ -388,6 +382,37 @@ describe("PATCH Endpoints", () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
+          });
+        });
+    });
+  });
+
+  /**
+   * {"comment_id":162,
+   * "author":"grumpy19",
+   * "votes":14,
+   * "created_at":"2020-10-03T19:22:00.000Z",
+   * "body":"Et suscipit maxime sit sunt consequuntur consequatur fugiat molestias.
+   * Et quis enim vero.",
+   * "article_id":2}
+   */
+  describe("PATCH /api/comments/:comment_id (08)", () => {
+    it("200: Returns an object of updated comment", () => {
+      const updateBody = { inc_votes: 4 };
+      return request(app)
+        .patch("/api/comments/5")
+        .send(updateBody)
+        .expect(201)
+        .then((response) => {
+          const { comment } = response.body;
+          expect(comment).toBeInstanceOf(Object);
+          expect(comment.comment_id).toBe(5);
+          expect(comment.author).toBe("icellusedkars");
+          expect(comment.votes).toBe(4);
+          expect(comment.article_id).toBe(1);
+          expect(comment).toMatchObject({
+            created_at: expect.any(String),
+            body: expect.any(String),
           });
         });
     });
@@ -422,7 +447,6 @@ describe("POST Endpoints", () => {
   });
 });
 
-
 describe("DELETE Endpoints", () => {
   describe("DELETE: /api/comments/:comment_id (12)", () => {
     it("Deletes a comment and returns 204 & no content", () => {
@@ -432,17 +456,18 @@ describe("DELETE Endpoints", () => {
         .then((response) => {
           expect(response.body).toEqual({});
           return request(app).delete("/api/comments/10");
-        }).then((response) => {
+        })
+        .then((response) => {
           expect(response.status).toBe(404);
-          expect(response.body.msg).toBe("Cannot find article with ID provided");
+          expect(response.body.msg).toBe(
+            "Cannot find article with ID provided"
+          );
         });
     });
   });
 });
 
-
 describe("Error handling tests", () => {
-
   describe("GET Error Handlers", () => {
     it("404: Any 404's from incorrect paths", () => {
       return request(app)
@@ -515,11 +540,9 @@ describe("Error handling tests", () => {
           expect(body.msg).toBe("Username not found");
         });
     });
-
   });
 
   describe("POST Error Handlers", () => {
-
     it("404: Article not found on POST new article.", () => {
       const newComment = {
         username: "rogersop",
@@ -600,7 +623,6 @@ describe("Error handling tests", () => {
   });
 
   describe("PATCH Error Handlers", () => {
-
     it("404: PATCH /api/articles/:article_id (negative id provided)", () => {
       const updateBody = { inc_votes: 2 };
       return request(app)
@@ -656,6 +678,66 @@ describe("Error handling tests", () => {
         });
     });
 
+    /*************** comments */
+    it("404: PATCH /api/comments/:comment_id (negative id provided)", () => {
+      const updateBody = { inc_votes: 5 };
+      return request(app)
+        .patch("/api/comments/-4")
+        .send(updateBody)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid type for comment id");
+        });
+    });
+
+    it("400: PATCH /api/comments/:comment_id (Wrong or non-existent key)", () => {
+      const updateBody = { spudulike: 2 };
+      return request(app)
+        .patch("/api/comments/2")
+        .send(updateBody)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Object does not contain correct key(s)");
+        });
+    });
+
+    it("400: PATCH /api/comments/:comment_id (Wrong key value type)", () => {
+      const updateBody = { inc_votes: "twelfty" };
+      return request(app)
+        .patch("/api/comments/2")
+        .send(updateBody)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid value type in object");
+        });
+    });
+
+    it("400: PATCH /api/comments/:comment_id (No comment found)", () => {
+      const updateBody = { inc_votes: 7 };
+      return request(app)
+        .patch("/api/comments/99999999")
+        .send(updateBody)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Comment Not Found");
+        });
+    });
+
+    it("400: PATCH /api/comments/:comment_id (Bad comment ID provided)", () => {
+      const updateBody = { inc_votes: 3 };
+      return request(app)
+        .patch("/api/comments/pasta")
+        .send(updateBody)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid parameter type provided");
+        });
+    });
+
+    /****************** */
+  });
+
+  describe("DELETE Error Handlers", () => {
     it("404: DELETE /api/comments/:comment_id non existent ID", () => {
       return request(app)
         .delete("/api/comments/10000")
@@ -673,6 +755,5 @@ describe("Error handling tests", () => {
           expect(body.msg).toBe("Invalid parameter type provided");
         });
     });
-
   });
 });
