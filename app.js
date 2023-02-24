@@ -1,15 +1,9 @@
 const express = require("express");
 const app = express();
 
+const apiRouter = require("./routes/api-router");
+
 app.use(express.json());
-
-const { getTopics } = require('./controllers/topicController');
-
-const { getApiRoutes } = require('./controllers/apiRouteController');
-
-const { getUsers } = require('./controllers/userController');
-
-const { getArticleById, getArticles, patchArticleById } = require("./controllers/articleController");
 
 const { getArtCommentsById, postArtCommentById, delCommentById } = require("./controllers/commentController");
 
@@ -18,24 +12,9 @@ const { default404s, errorHandler400, errorHandler500 } = require("./controllers
 /** Imports & BP above here */
 
 /** routes */
-app.get('/api', getApiRoutes);
 
-app.get("/api/topics", getTopics);
-
-app.get("/api/articles", getArticles);
-
-app.get("/api/users", getUsers);
-
-app.get("/api/articles/:article_id", getArticleById);
-
-app.get("/api/articles/:article_id/comments", getArtCommentsById);
-
-app.post("/api/articles/:article_id/comments", postArtCommentById);
-
-app.delete("/api/comments/:comment_id", delCommentById);
-
-app.patch("/api/articles/:article_id", patchArticleById);
-
+app.use('/', apiRouter);
+app.use('/api', apiRouter);
 
 /*const allRoutes = [];
 app._router.stack.forEach(function (r) {

@@ -14,8 +14,22 @@ afterAll(() => {
   db.end();
 });
 
-describe('API Description', () => {
-  describe('GET /api', () => {
+describe("GET Endpoints", () => {
+
+  describe("GET /  (Service is alive)", () => {
+    it("200: Returns a msg of API Running... ", () => {
+      return request(app)
+        .get("/")
+        .expect(200)
+        .then((response) => {
+          const { msg } = response.body;
+          expect(response.body).toBeInstanceOf(Object);
+          expect(msg).toBe("API Running, use /api to see endpoints.");
+        });
+    });
+  });
+
+  describe("GET /api", () => {
     it("200: Returns an object of api endpoints and descriptions", () => {
       return request(app)
         .get("/api")
@@ -32,14 +46,15 @@ describe('API Description', () => {
             "GET /api/articles/:article_id/comments": expect.any(Object),
             "POST /api/articles/:article_id/comments": expect.any(Object),
             "DELETE /api/comments/:comment_id": expect.any(Object),
-            "PATCH /api/articles/:article_id": expect.any(Object)
+            "PATCH /api/articles/:article_id": expect.any(Object),
           });
         });
     });
   });
-});
 
-describe("GET Endpoints", () => {
+
+
+
   describe("GET /api/topics (03)", () => {
     it("200: Returns an array of objects containing topic & description", () => {
       return request(app)
