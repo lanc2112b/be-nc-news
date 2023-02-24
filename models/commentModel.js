@@ -33,6 +33,50 @@ exports.insertCommentByArtId = (id, author, body) => {
     });
 };
 
+
+exports.updateCommentById = (id, update) => {
+  /** Extract to validation helper, pretty much the same code for article & comment required */
+  const { inc_votes } = update;
+
+  if (id < 1) {
+    return Promise.reject({ status: 400, msg: "Invalid type for comment id" });
+  }
+
+  if (!update) {
+    return Promise.reject({ status: 400, msg: "No data provided" });
+  }
+
+  if (update.hasOwnProperty("inc_votes") === false) {
+    return Promise.reject({
+      status: 400,
+      msg: "Object does not contain correct key(s)",
+    });
+  } else if (typeof update.inc_votes !== "number") {
+    return Promise.reject({ status: 400, msg: "Invalid value type in object" });
+  }
+
+  return db
+    .query(
+      `UPDATE comments
+        SET
+          votes = votes + $1            
+        WHERE comment_id = $2
+        RETURNING *;`,
+      [inc_votes, id]
+    )
+    .then((result) => {
+      if (result.rows < 1) {
+        return Promise.reject({ status: 404, msg: "Comment Not Found" });
+      }
+      return result.rows[0];
+    });
+};
+
+
+
+
+
+
 exports.deleteCommentById = (id) => {
   return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, [id])
     .then((result) => {

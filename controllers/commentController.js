@@ -1,4 +1,7 @@
-const { selectCommentsByArticleId, insertCommentByArtId, deleteCommentById } = require("../models/commentModel");
+const {
+  selectCommentsByArticleId, insertCommentByArtId,
+  updateCommentById, deleteCommentById,
+} = require("../models/commentModel");
 
 const { selectUsernameByName } = require('../models/userModel');
 
@@ -43,6 +46,21 @@ exports.postArtCommentById = (request, response, next) => {
       next(error);
     });
 }
+
+exports.patchCommentById = (request, response, next) => {
+
+  const { comment_id } = request.params;
+
+  const updateData = request.body;
+
+  updateCommentById(comment_id, updateData)
+    .then((result) => {
+      response.status(201).send({ comment: result });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
 
 exports.delCommentById = (request, response, next) => {
   
