@@ -95,6 +95,21 @@ describe("GET Endpoints", () => {
     });
   });
 
+  describe("/api/users/:username (17)", () => {
+    it("200: Returns an object containing specified user by ID", () => {
+      return request(app)
+        .get("/api/users/rogersop")
+        .expect(200)
+        .then((response) => {
+          const { user } = response.body;
+          expect(user).toBeInstanceOf(Object);
+          expect(user.username).toBe("rogersop");
+          expect(user.name).toBe("paul");
+          expect(user.avatar_url).toBe("https://avatars2.githubusercontent.com/u/24394918?s=400&v=4");
+        });
+    });
+  });
+
   describe("GET /api/articles/ (05)", () => {
     it("200: Returns object with a single article, selected by id", () => {
       return request(app)
@@ -492,6 +507,15 @@ describe("Error handling tests", () => {
         });
     });
 
+    it("404: GET /api/users/:username conceivably they could have a numeric username? ", () => {
+      return request(app)
+        .get("/api/users/23423") // any, as long as it doesn't exist
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Username not found");
+        });
+    });
+
   });
 
   describe("POST Error Handlers", () => {
@@ -510,14 +534,14 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("400: Empty object / no object passed in request.", () => {
+    it("4004 Empty object / no object passed in request.", () => {
       const newComment = {};
       return request(app)
         .post("/api/articles/3/comments")
         .send(newComment)
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Bad username");
+          expect(body.msg).toBe("Username not found");
         });
     });
 
@@ -532,7 +556,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("400: Invalid user provided.", () => {
+    it("404: Invalid user provided.", () => {
       const newComment = {
         username: "twsbidiamond580",
         body: "Ich bin keine kartoffel",
@@ -540,9 +564,9 @@ describe("Error handling tests", () => {
       return request(app)
         .post("/api/articles/3/comments")
         .send(newComment)
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Bad username");
+          expect(body.msg).toBe("Username not found");
         });
     });
 
@@ -560,7 +584,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("400: No user provided.", () => {
+    it("404: No user provided.", () => {
       const newComment = {
         username: "",
         body: "Capybara, Kapibara, Kapivar, Kapübara, Carpincho, Wasserschwein",
@@ -568,9 +592,9 @@ describe("Error handling tests", () => {
       return request(app)
         .post("/api/articles/3/comments")
         .send(newComment)
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Bad username");
+          expect(body.msg).toBe("Username not found");
         });
     });
   });
@@ -641,7 +665,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("404: DELETE /api/comments/:comment_id non valid ID type", () => {
+    it("400: DELETE /api/comments/:comment_id non valid ID type", () => {
       return request(app)
         .delete("/api/comments/capybara")
         .expect(400)
