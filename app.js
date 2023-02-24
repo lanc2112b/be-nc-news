@@ -3,28 +3,26 @@ const app = express();
 
 const apiRouter = require("./routes/api-router");
 
-app.use(express.json());
-
-const { getArtCommentsById, postArtCommentById, delCommentById } = require("./controllers/commentController");
-
 const { default404s, errorHandler400, errorHandler500 } = require("./controllers/errorHandlerController");
 
-/** Imports & BP above here */
-
-/** routes */
+app.use(express.json());
 
 app.use('/', apiRouter);
 app.use('/api', apiRouter);
 
-/*const allRoutes = [];
+/** end routes */
+
+
+/*
+const allRoutes = [];
 app._router.stack.forEach(function (r) {
   if (r.route && r.route.path) {
     allRoutes.push(r.route.path);
   }
 });
+console.log(allRoutes);
 */
 
-/** end routes */
 /** error handlers */
 app.use(default404s);
 app.use(errorHandler400);
