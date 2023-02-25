@@ -10,12 +10,13 @@ const { selectArticleById } = require('../models/articleModel');
 exports.getArtCommentsById = (request, response, next) => {
 
   const { article_id } = request.params;
+  const { limit, p } = request.query;
 
-  const commentsPromise = selectCommentsByArticleId(article_id);
   const articlePromise = selectArticleById(article_id);
+  const commentsPromise = selectCommentsByArticleId(article_id, limit, p);
 
-  Promise.all([commentsPromise, articlePromise])
-    .then(([comments]) => {
+  Promise.all([articlePromise, commentsPromise])
+    .then(([,comments]) => {
 
       response.status(200).send({ comments: comments });
     })
