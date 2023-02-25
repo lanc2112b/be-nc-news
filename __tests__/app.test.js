@@ -582,14 +582,13 @@ describe("PATCH Endpoints", () => {
 });
 
 describe("POST Endpoints", () => {
-
   describe("POST: /api/topics (22)", () => {
     const newTopic = {
       slug: "dogs",
       description: "All things dogs & dog related",
     };
 
-    it("Adds a new topic to topics", () => {
+    it("201: Adds a new topic to topics", () => {
       return request(app)
         .post("/api/topics")
         .send(newTopic)
@@ -609,7 +608,7 @@ describe("POST Endpoints", () => {
       body: "Some new comment for article with id: 3",
     };
 
-    it("Adds a new comment to article, if article exists", () => {
+    it("201: Adds a new comment to article, if article exists", () => {
       return request(app)
         .post("/api/articles/3/comments")
         .send(newComment)
@@ -639,7 +638,7 @@ describe("POST Endpoints", () => {
         "https://images.pexels.com/photos/774731/pexels-photo-774731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     };
 
-    it("Adds a new article", () => {
+    it("201: Adds a new article", () => {
       return request(app)
         .post("/api/articles")
         .send(newArticle)
@@ -667,7 +666,7 @@ describe("POST Endpoints", () => {
 
 describe("DELETE Endpoints", () => {
   describe("DELETE: /api/comments/:comment_id (12)", () => {
-    it("Deletes a comment and returns 204 & no content", () => {
+    it("204: Deletes a comment and returns 204 & no content", () => {
       return request(app)
         .delete("/api/comments/10")
         .expect(204)
@@ -685,7 +684,7 @@ describe("DELETE Endpoints", () => {
   });
 
   describe("DELETE: /api/articles/:article_id (23)", () => {
-    it("Deletes an article and returns 204 & no content", () => {
+    it("204: Deletes an article and returns 204 & no content", () => {
       return request(app)
         .delete("/api/articles/2")
         .expect(204)
@@ -705,7 +704,7 @@ describe("DELETE Endpoints", () => {
 
 describe("Error handling tests", () => {
   describe("GET Error Handlers", () => {
-    it("404: Any 404's from incorrect paths", () => {
+    it("404: GET /api/unknown/path Any 404's from incorrect paths", () => {
       return request(app)
         .get("/api/unknown/path")
         .expect(404)
@@ -714,7 +713,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("404: When Article ID not found. ", () => {
+    it("404: GET /api/articles/:article_id. When Article ID not found. ", () => {
       return request(app)
         .get("/api/articles/49999")
         .expect(404)
@@ -723,7 +722,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("404: Invalid article ID when pulling comments.", () => {
+    it("404: GET /api/articles/:article_id/comments. Invalid article ID when pulling comments.", () => {
       return request(app)
         .get("/api/articles/200/comments")
         .expect(404)
@@ -732,7 +731,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("404: Invalid value passed to limit when pulling comments.", () => {
+    it("404: GET /api/articles/:article_id/comments. Invalid value passed to limit when pulling comments.", () => {
       return request(app)
         .get("/api/articles/1/comments?limit=plectrum")
         .expect(400)
@@ -741,7 +740,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("404: Invalid value passed to p (page) when pulling comments.", () => {
+    it("404: GET /api/articles/:article_id/comments. Invalid value passed to p (page) when pulling comments.", () => {
       return request(app)
         .get("/api/articles/1/comments?p=capo")
         .expect(400)
@@ -750,7 +749,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("400: Invalid id type supplied to /api/articles/.", () => {
+    it("400: GET /api/articles/:article_id. Invalid id type supplied", () => {
       return request(app)
         .get("/api/articles/banana")
         .expect(400)
@@ -759,7 +758,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("404: Non-existant topic supplied to /api/articles/.", () => {
+    it("404: GET /api/articles. Non-existant topic supplied.", () => {
       return request(app)
         .get("/api/articles?topic=capybaras")
         .expect(404)
@@ -768,7 +767,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("400: Bad sort_by string to /api/articles/.", () => {
+    it("400: GET /api/articles. Bad sort_by string.", () => {
       return request(app)
         .get("/api/articles?sort_by=capybaras")
         .expect(400)
@@ -777,7 +776,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("400: Bad order string to /api/articles/.", () => {
+    it("400: GET /api/articles. Bad order string.", () => {
       return request(app)
         .get("/api/articles?order=dave")
         .expect(400)
@@ -786,7 +785,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("400: Bad limit value to /api/articles/. (20)", () => {
+    it("400: GET /api/articles. Bad limit value. (20)", () => {
       return request(app)
         .get("/api/articles?limit=dave")
         .expect(400)
@@ -795,7 +794,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("400: Bad page value to /api/articles/. (20)", () => {
+    it("400: GET /api/articles. Bad page value. (20)", () => {
       return request(app)
         .get("/api/articles?limit=10&p=bob")
         .expect(400)
@@ -815,7 +814,7 @@ describe("Error handling tests", () => {
   });
 
   describe("POST Error Handlers", () => {
-    it("404: Article not found on POST new article.", () => {
+    it("404: POST /api/articles/:article_id/comments. Article not found on POST new article.", () => {
       const newComment = {
         username: "rogersop",
         body: "Some new comment for article with id: 3",
@@ -829,7 +828,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("404 Empty object / no object passed in request.", () => {
+    it("404: POST /api/articles/:article_id/comments. Empty object / no object passed in request.", () => {
       const newComment = {};
       return request(app)
         .post("/api/articles/3/comments")
@@ -840,7 +839,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("400: Empty object 'body' passed in request.", () => {
+    it("400: POST /api/articles/:article_id/comments. Empty object 'body' passed in request.", () => {
       const newComment = { username: "rogersop" };
       return request(app)
         .post("/api/articles/3/comments")
@@ -851,7 +850,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("404: Invalid user provided.", () => {
+    it("404: POST /api/articles/:article_id/comments. Invalid user provided.", () => {
       const newComment = {
         username: "twsbidiamond580",
         body: "Ich bin keine kartoffel",
@@ -865,7 +864,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("400: Invalid type passed as article_id.", () => {
+    it("400: POST /api/articles/:article_id/comments. Invalid type passed as article_id.", () => {
       const newComment = {
         username: "rogersop",
         body: "Diese Woche esse ich hauptsächlich Kimchee",
@@ -879,7 +878,7 @@ describe("Error handling tests", () => {
         });
     });
 
-    it("404: No user provided.", () => {
+    it("404: POST /api/articles/:article_id/comments. No user provided.", () => {
       const newComment = {
         username: "",
         body: "Capybara, Kapibara, Kapivar, Kapübara, Carpincho, Wasserschwein",
@@ -975,52 +974,51 @@ describe("Error handling tests", () => {
           expect(body.msg).toBe("Username not found"); // Nothing provided, skip to first missing item
         });
     });
-  });
 
-  it("400: POST /api/topics. Slug not provided (22)", () => {
-    //      slug: "dogs",
-    const newTopic = {
-      description: "All things dogs & dog related",
-    };
-    return request(app)
-      .post("/api/topics")
-      .send(newTopic)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Slug not provided (required)");
-      });
-  });
+    it("400: POST /api/topics. Slug not provided (22)", () => {
+      //      slug: "dogs",
+      const newTopic = {
+        description: "All things dogs & dog related",
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Slug not provided (required)");
+        });
+    });
 
-  it("400: POST /api/topics. Description not provided (22)", () => {
-    const newTopic = {
-      slug: "dogs",
-      description: "",
-    };
-    return request(app)
-      .post("/api/topics")
-      .send(newTopic)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Description not provided (required)");
-      });
-  });
+    it("400: POST /api/topics. Description not provided (22)", () => {
+      const newTopic = {
+        slug: "dogs",
+        description: "",
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Description not provided (required)");
+        });
+    });
 
-  it("400: POST /api/topics. Topic already exists (22)", () => {
-    const newTopic = {
-      slug: "cats",
-      description: "Something about cats",
-    };
-    return request(app)
-      .post("/api/topics")
-      .send(newTopic)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe(
-          "Duplicate entry: Key (slug)=(cats) already exists."
-        );
-      });
+    it("400: POST /api/topics. Topic already exists (22)", () => {
+      const newTopic = {
+        slug: "cats",
+        description: "Something about cats",
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe(
+            "Duplicate entry: Key (slug)=(cats) already exists."
+          );
+        });
+    });
   });
-
   describe("PATCH Error Handlers", () => {
     it("404: PATCH /api/articles/:article_id (negative id provided)", () => {
       const updateBody = { inc_votes: 2 };
@@ -1181,6 +1179,5 @@ describe("Error handling tests", () => {
           expect(body.msg).toBe("Invalid type for article id");
         });
     });
-
   });
 });
