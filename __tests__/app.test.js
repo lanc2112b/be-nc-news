@@ -143,7 +143,7 @@ describe("GET Endpoints", () => {
           expect(articles[4].article_id).toBe(5);
           expect(articles).toBeSorted({ key: "article_id", ascending: true }); // leave default
           articles.forEach((article) => {
-            expect(article.total_count).toBe('12');
+            expect(article.total_count).toBe("12");
             expect(article).toMatchObject({
               author: expect.any(String),
               title: expect.any(String),
@@ -159,66 +159,66 @@ describe("GET Endpoints", () => {
     });
   });
 
-    describe("GET /api/articles (20) L=6, P=2", () => {
-      it("200: Returns an array of objects containing articles with limit, page, & totals", () => {
-        return request(app)
-          .get("/api/articles?limit=6&p=2&sort_by=article_id&order=asc")
-          .expect(200)
-          .then((response) => {
-            const { articles } = response.body;
-            expect(articles).toBeInstanceOf(Array);
-            expect(articles).toHaveLength(6);
-            expect(articles[0].article_id).toBe(7);
-            expect(articles[5].article_id).toBe(12);
-            expect(articles).toBeSorted({ key: "article_id", ascending: true }); // leave default
-            articles.forEach((article) => {
-              expect(article.total_count).toBe("12");
-              expect(article).toMatchObject({
-                author: expect.any(String),
-                title: expect.any(String),
-                article_id: expect.any(Number),
-                topic: expect.any(String),
-                created_at: expect.any(String),
-                votes: expect.any(Number),
-                article_img_url: expect.any(String),
-                comment_count: expect.any(String),
-              });
+  describe("GET /api/articles (20) L=6, P=2", () => {
+    it("200: Returns an array of objects containing articles with limit, page, & totals", () => {
+      return request(app)
+        .get("/api/articles?limit=6&p=2&sort_by=article_id&order=asc")
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(6);
+          expect(articles[0].article_id).toBe(7);
+          expect(articles[5].article_id).toBe(12);
+          expect(articles).toBeSorted({ key: "article_id", ascending: true }); // leave default
+          articles.forEach((article) => {
+            expect(article.total_count).toBe("12");
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
             });
           });
-      });
-    });
-  
-      describe("GET /api/articles (20) L=default(10), P=2, default sort", () => {
-        it("200: Returns an array of objects containing articles with limit, page, & totals", () => {
-          return request(app)
-            .get("/api/articles?p=2")
-            .expect(200)
-            .then((response) => {
-              const { articles } = response.body;
-              expect(articles).toBeInstanceOf(Array);
-              expect(articles).toHaveLength(2);
-              expect(articles[0].article_id).toBe(11);
-              expect(articles[1].article_id).toBe(7);
-              expect(articles).toBeSorted({
-                key: "created_at",
-                descending: true,
-              }); // leave default
-              articles.forEach((article) => {
-                expect(article.total_count).toBe("12");
-                expect(article).toMatchObject({
-                  author: expect.any(String),
-                  title: expect.any(String),
-                  article_id: expect.any(Number),
-                  topic: expect.any(String),
-                  created_at: expect.any(String),
-                  votes: expect.any(Number),
-                  article_img_url: expect.any(String),
-                  comment_count: expect.any(String),
-                });
-              });
-            });
         });
-      });
+    });
+  });
+
+  describe("GET /api/articles (20) L=default(10), P=2, default sort", () => {
+    it("200: Returns an array of objects containing articles with limit, page, & totals", () => {
+      return request(app)
+        .get("/api/articles?p=2")
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(2);
+          expect(articles[0].article_id).toBe(11);
+          expect(articles[1].article_id).toBe(7);
+          expect(articles).toBeSorted({
+            key: "created_at",
+            descending: true,
+          }); // leave default
+          articles.forEach((article) => {
+            expect(article.total_count).toBe("12");
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+  });
 
   describe("GET /api/articles/ (11)", () => {
     it("200: Returns object with a single article, selected by id to include comment_count", () => {
@@ -255,6 +255,87 @@ describe("GET Endpoints", () => {
           expect(comments).toBeSorted({ key: "created_at", descending: true });
           comments.forEach((comment) => {
             expect(comment.article_id).toBe(3);
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              article_id: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+
+  describe("GET /api/articles/:article_id/comments (Pagination) (21) L=5, P=1", () => {
+    it("200: Returns an array of objects containing comments with limit, page, & totals", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5&p=1")
+        .expect(200)
+        .then((response) => {
+          const { comments } = response.body;
+          expect(comments).toBeInstanceOf(Array);
+          expect(comments).toHaveLength(5);
+          expect(comments[0].comment_id).toBe(5);
+          expect(comments[4].comment_id).toBe(7);
+          expect(comments).toBeSorted({ key: "created_at", descending: true });
+          comments.forEach((comment) => {
+            expect(comment.article_id).toBe(1);
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              article_id: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+
+  describe("GET /api/articles/:article_id/comments (Pagination) (21) L=5, P=2", () => {
+    it("200: Returns an array of objects containing comments with limit, page, & totals", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5&p=2")
+        .expect(200)
+        .then((response) => {
+          const { comments } = response.body;
+          expect(comments).toBeInstanceOf(Array);
+          expect(comments).toHaveLength(5);
+          expect(comments[0].comment_id).toBe(8);
+          expect(comments[4].comment_id).toBe(4);
+          expect(comments).toBeSorted({ key: "created_at", descending: true });
+          comments.forEach((comment) => {
+            expect(comment.article_id).toBe(1);
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              article_id: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+
+  describe("GET /api/articles/:article_id/comments (Pagination) (21) L=7, P=2", () => {
+    it("200: Returns an array of objects containing comments with limit, page, & totals", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=7&p=2")
+        .expect(200)
+        .then((response) => {
+          const { comments } = response.body;
+          expect(comments).toBeInstanceOf(Array);
+          expect(comments).toHaveLength(4); // 2nd page with limit 7, from 11 total, leaves 4
+          expect(comments[0].comment_id).toBe(12); // 12
+          expect(comments[3].comment_id).toBe(9); // 9
+          expect(comments).toBeSorted({ key: "created_at", descending: true });
+          comments.forEach((comment) => {
+            expect(comment.article_id).toBe(1);
             expect(comment).toMatchObject({
               comment_id: expect.any(Number),
               votes: expect.any(Number),
@@ -612,6 +693,24 @@ describe("Error handling tests", () => {
         });
     });
 
+    it("404: Invalid value passed to limit when pulling comments.", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=plectrum")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request: limit value type");
+        });
+    });
+
+    it("404: Invalid value passed to p (page) when pulling comments.", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=capo")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request: page value type");
+        });
+    });
+
     it("400: Invalid id type supplied to /api/articles/.", () => {
       return request(app)
         .get("/api/articles/banana")
@@ -837,7 +936,6 @@ describe("Error handling tests", () => {
           expect(body.msg).toBe("Username not found"); // Nothing provided, skip to first missing item
         });
     });
-
   });
 
   describe("PATCH Error Handlers", () => {

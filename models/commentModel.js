@@ -1,15 +1,39 @@
 const db = require("../db/connection");
 
-exports.selectCommentsByArticleId = (id) => {
+exports.selectCommentsByArticleId = (id, limit = 10, page = 1) => {
+  
+  if (isNaN(limit)) {
+    return Promise.reject({ status: 400, msg: "Bad Request: limit value type" });
+  }
+
+  if (isNaN(page)) {
+    return Promise.reject({ status: 400, msg: "Bad Request: page value type" });
+  }
+  
+  const limitStr = ` LIMIT $2`;
+
+  const offsetStr = ` OFFSET $3`; 
+
+  const offSetVal = page > 1 ? limit * (page - 1) : 0;
+
+  const valsArray = [id];
+
+  valsArray.push(limit);
+  valsArray.push(offSetVal);
+
   return db
     .query(
       `SELECT comment_id, author, votes, created_at, body, article_id
         FROM comments
         WHERE article_id = $1
-        ORDER BY created_at DESC;`,
-      [id]
+        ORDER BY created_at DESC
+        ${limitStr} ${offsetStr};`,
+      valsArray
     )
     .then((result) => {
+      if (result.rows < 1) {
+        return Promise.reject({ status: 404, msg: "No Comments Found" });
+      }
       return result.rows;
     });
 };
