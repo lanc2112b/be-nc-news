@@ -5,6 +5,7 @@ const {
   getArticles,
   patchArticleById,
   postNewArticle,
+  delArticleById,
 } = require("../controllers/articleController");
 
 const {
@@ -23,5 +24,7 @@ articleRouter.patch("/:article_id", patchArticleById);
 articleRouter.get("/:article_id/comments", getArtCommentsById);
 
 articleRouter.post("/:article_id/comments", postArtCommentById);
+
+articleRouter.delete("/:article_id", delArticleById);
 
 module.exports = articleRouter;

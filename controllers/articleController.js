@@ -3,6 +3,7 @@ const {
   selectAllArticles,
   updateArticleById,
   insertNewArticle,
+  deleteArticleById,
 } = require("../models/articleModel");
 
 const { selectUsernameByName } = require('../models/userModel');
@@ -65,3 +66,16 @@ exports.patchArticleById = (request, response, next) => {
         next(error);
       });
 }
+
+exports.delArticleById = (request, response, next) => {
+
+  const { article_id } = request.params;
+
+  deleteArticleById(article_id)
+    .then((result) => {
+      response.sendStatus(204);
+    })
+    .catch((error) => {
+      next(error);
+    });
+};

@@ -166,3 +166,24 @@ exports.updateArticleById = (id, update) => {
       return result.rows[0];
     });
 };
+
+exports.deleteArticleById = (id) => {
+
+  if (id < 1) {
+    return Promise.reject({ status: 400, msg: "Invalid type for article id" });
+  }
+
+  if (isNaN(id)) {
+    return Promise.reject({ status: 400, msg: "Article id should be a number" });
+  }
+
+  return db.query(`DELETE FROM articles WHERE article_id = $1 RETURNING *;`, [id])
+    .then((result) => {
+
+      if (result.rowCount === 0) {
+        return Promise.reject({ status: 404, msg: "Cannot find article with ID provided" });
+      }
+      return result.rows[0];
+    });
+
+}

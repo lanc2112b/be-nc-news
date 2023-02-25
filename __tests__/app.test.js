@@ -683,6 +683,24 @@ describe("DELETE Endpoints", () => {
         });
     });
   });
+
+  describe("DELETE: /api/articles/:article_id (23)", () => {
+    it("Deletes an article and returns 204 & no content", () => {
+      return request(app)
+        .delete("/api/articles/2")
+        .expect(204)
+        .then((response) => {
+          expect(response.body).toEqual({});
+          return request(app).delete("/api/articles/2"); // lookup freshly deleted article (404)
+        })
+        .then((response) => {
+          expect(response.status).toBe(404);
+          expect(response.body.msg).toBe(
+            "Cannot find article with ID provided"
+          );
+        });
+    });
+  });
 });
 
 describe("Error handling tests", () => {
@@ -1136,5 +1154,33 @@ describe("Error handling tests", () => {
           expect(body.msg).toBe("Invalid parameter type provided");
         });
     });
+
+    it("400: DELETE /api/articles/:article_id non valid ID type (23)", () => {
+      return request(app)
+        .delete("/api/articles/tikky")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Article id should be a number");
+        });
+    });
+
+    it("404: DELETE /api/articles/:article_id no article found (23)", () => {
+      return request(app)
+        .delete("/api/articles/10990")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Cannot find article with ID provided");
+        });
+    });
+
+    it("400: DELETE /api/articles/:article_id negative number sent as id (23)", () => {
+      return request(app)
+        .delete("/api/articles/-23")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid type for article id");
+        });
+    });
+
   });
 });

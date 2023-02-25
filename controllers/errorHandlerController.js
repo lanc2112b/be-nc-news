@@ -9,6 +9,9 @@ exports.errorHandler400 = (error, request, response, next) => {
   } else if (error.code === "23505") {
 
     response.status(400).send({ msg: `Duplicate entry: ${error.detail}` });
+  } else if (error.code === "23503") {
+
+    response.status(400).send({ msg: `Key constraint trying to delete item` });
   } else {
 
     error.status && error.msg;
