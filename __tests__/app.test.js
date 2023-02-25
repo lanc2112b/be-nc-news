@@ -582,6 +582,27 @@ describe("PATCH Endpoints", () => {
 });
 
 describe("POST Endpoints", () => {
+
+  describe("POST: /api/topics (22)", () => {
+    const newTopic = {
+      slug: "dogs",
+      description: "All things dogs & dog related",
+    };
+
+    it("Adds a new topic to topics", () => {
+      return request(app)
+        .post("/api/topics")
+        .send(newTopic)
+        .expect(201)
+        .then((response) => {
+          const { topic } = response.body;
+          expect(topic).toBeInstanceOf(Object);
+          expect(topic.slug).toBe("dogs");
+          expect(topic.description).toBe("All things dogs & dog related");
+        });
+    });
+  });
+
   describe("POST: /api/articles/:article_id/comments (07)", () => {
     const newComment = {
       username: "rogersop",
@@ -936,6 +957,50 @@ describe("Error handling tests", () => {
           expect(body.msg).toBe("Username not found"); // Nothing provided, skip to first missing item
         });
     });
+  });
+
+  it("400: POST /api/topics. Slug not provided (22)", () => {
+    //      slug: "dogs",
+    const newTopic = {
+      description: "All things dogs & dog related",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Slug not provided (required)");
+      });
+  });
+
+  it("400: POST /api/topics. Description not provided (22)", () => {
+    const newTopic = {
+      slug: "dogs",
+      description: "",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Description not provided (required)");
+      });
+  });
+
+  it("400: POST /api/topics. Topic already exists (22)", () => {
+    const newTopic = {
+      slug: "cats",
+      description: "Something about cats",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Duplicate entry: Key (slug)=(cats) already exists."
+        );
+      });
   });
 
   describe("PATCH Error Handlers", () => {
