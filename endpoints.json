@@ -14,12 +14,30 @@
       ]
     }
   },
-  "GET /api/articles": {
+  "POST /api/topics": {
     "description": "serves an array of all topics",
+    "queries": [],
+    "consumes": {
+      "slug": "football",
+      "description": "Footie!"
+    },
+    "exampleResponse": {
+      "topics": [
+        {
+          "slug": "football",
+          "description": "Footie!"
+        }
+      ]
+    }
+  },
+  "GET /api/articles": {
+    "description": "serves an array of articles",
     "queries": [
       "topic",
       "sort_by",
-      "order"
+      "order",
+      "limit",
+      "p"
     ],
     "exampleResponse": {
       "articles": [
@@ -36,6 +54,126 @@
         }
       ]
     }
+  },
+  "POST /api/articles": {
+    "description": "Creates a new article",
+    "queries": [],
+    "consumes": {
+      "title": "Der Pinsel war wütend auf die Farbe, die der Künstler gewählt hatte.",
+      "topic": "paint",
+      "author": "Iroshizuku",
+      "body": "Tsuyu Kusa",
+      "article_img_url": "https://images.pexels.com/photos/8715902/pexels-photo-8715902.jpeg?auto=compress&cs=tinysrgb&w=175&fit=crop&h=275&dpr=1"
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": "222",
+        "title": "Der Pinsel war wütend auf die Farbe, die der Künstler gewählt hatte.",
+        "topic": "paint",
+        "author": "Iroshizuku",
+        "body": "Tsuyu Kusa",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/8715902/pexels-photo-8715902.jpeg?auto=compress&cs=tinysrgb&w=175&fit=crop&h=275&dpr=1",
+        "created_at": "2023-02-08 13:17:00",
+        "comment_count": 0
+      }
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an object of the specified article",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "article_id": "3",
+        "title": "Eight pug gifs that remind me of mitch",
+        "topic": "mitch",
+        "author": "icellusedkars",
+        "body": "some gifs",
+        "votes": 0,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        "created_at": "2020-04-06 13:17:00",
+        "comment_count": 12
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates the article specified by ID increments/decrements votes by value given",
+    "queries": [],
+    "consumes": {
+      "inc_votes": 2
+    },
+    "article": {
+      "article_id": "222",
+      "title": "Der Pinsel war wütend auf die Farbe, die der Künstler gewählt hatte.",
+      "topic": "paint",
+      "author": "Iroshizuku",
+      "body": "Tsuyu Kusa",
+      "votes": 2,
+      "article_img_url": "https://images.pexels.com/photos/8715902/pexels-photo-8715902.jpeg?auto=compress&cs=tinysrgb&w=175&fit=crop&h=275&dpr=1",
+      "created_at": "2023-02-08 13:17:00"
+    }
+  },
+  "DELETE /api/comments/:article_id": {
+    "description": "deletes the article, specified by ID",
+    "queries": [],
+    "exampleResponse": {}
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves an array of comments for the specified article",
+    "queries": [
+      "limit",
+      "p"
+    ],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": "15",
+          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          "article_id": "8",
+          "author": "butter_bridge",
+          "votes": "16",
+          "created_at": "2020-04-06 13:17:00"
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "serves an object of the newly created comment",
+    "queries": [],
+    "consumes": {
+      "username": "rogersop",
+      "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky."
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": "50",
+        "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        "article_id": "30",
+        "author": "rogersop",
+        "votes": "10",
+        "created_at": "2020-10-31 03:03:00"
+      }
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates the comment specified by ID, increments/decrements the votes by value provided",
+    "queries": [],
+    "consumes": {
+      "inc_votes": 1
+    },
+    "comment": {
+      "comment_id": "50",
+      "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+      "article_id": "30",
+      "author": "rogersop",
+      "votes": "11",
+      "created_at": "2020-10-31 03:03:00"
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes the comment specified by ID",
+    "queries": [],
+    "exampleResponse": {}
   },
   "GET /api/users": {
     "description": "serves an array of all users",
@@ -54,7 +192,7 @@
     "description": "serves an object of user specified by given id",
     "queries": [],
     "exampleResponse": {
-      "users": [
+      "user": [
         {
           "username": "butter_bridge",
           "name": "jonny",
@@ -62,96 +200,5 @@
         }
       ]
     }
-  },
-  "GET /api/articles/:article_id": {
-    "description": "serves an object of the specified article",
-    "queries": [],
-    "exampleResponse": {
-      "article": {
-        "article_id": "3",
-        "title": "Eight pug gifs that remind me of mitch",
-        "topic": "mitch",
-        "author": "icellusedkars",
-        "body": "some gifs",
-        "votes": 0,
-        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        "created_at": "2020-04-06 13:17:00"
-      }
-    }
-  },
-  "GET /api/articles/:article_id/comments": {
-    "description": "serves an array of comments for the specified article",
-    "queries": [],
-    "exampleResponse": {
-      "comments": [
-        {
-          "comment_id": "15",
-          "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-          "article_id": "8",
-          "author": "butter_bridge",
-          "votes": "16",
-          "created_at": "2020-04-06 13:17:00"
-        }
-      ]
-    }
-  },
-  "POST /api/articles/:article_id/comments": {
-    "description": "serves an object of the newly created comment",
-    "queries": [],
-    "exampleResponse": {
-      "comment": {
-        "comment_id": "50",
-        "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-        "article_id": "30",
-        "author": "rogersop",
-        "votes": "10",
-        "created_at": "2020-10-31 03:03:00"
-      }
-    }
-  },
-  "POST /api/articles": {
-    "description": "Creates a new article",
-    "queries": [],
-    "article": {
-      "article_id": "222",
-      "title": "Der Pinsel war wütend auf die Farbe, die der Künstler gewählt hatte.",
-      "topic": "paint",
-      "author": "Iroshizuku",
-      "body": "Tsuyu Kusa",
-      "votes": 0,
-      "article_img_url": "https://images.pexels.com/photos/8715902/pexels-photo-8715902.jpeg?auto=compress&cs=tinysrgb&w=175&fit=crop&h=275&dpr=1",
-      "created_at": "2023-02-08 13:17:00"
-    }
-  },
-  "PATCH /api/articles/:article_id": {
-    "description": "updates the article specified by ID",
-    "queries": [],
-    "article": {
-      "article_id": "222",
-      "title": "Der Pinsel war wütend auf die Farbe, die der Künstler gewählt hatte.",
-      "topic": "paint",
-      "author": "Iroshizuku",
-      "body": "Tsuyu Kusa",
-      "votes": 0,
-      "article_img_url": "https://images.pexels.com/photos/8715902/pexels-photo-8715902.jpeg?auto=compress&cs=tinysrgb&w=175&fit=crop&h=275&dpr=1",
-      "created_at": "2023-02-08 13:17:00"
-    }
-  },
-  "PATCH /api/comments/:comment_id": {
-    "description": "updates the comment specified by ID",
-    "queries": [],
-    "comment": {
-      "comment_id": "50",
-      "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-      "article_id": "30",
-      "author": "rogersop",
-      "votes": "10",
-      "created_at": "2020-10-31 03:03:00"
-    }
-  },
-  "DELETE /api/comments/:comment_id": {
-    "description": "deletes the comment specified by ID",
-    "queries": [],
-    "exampleResponse": {}
   }
 }
