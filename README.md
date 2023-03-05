@@ -2,7 +2,7 @@
 
 A simple RESTful API built with Node.js & Express. See the example below to see the current endpoints available & their descriptions.  
 
-#### Example [https://nc-news-rest.onrender.com/api](https://nc-news-rest.onrender.com/api)
+#### Example [https://api.muninn.co.uk/api](https://api.muninn.co.uk/api)
 
 #### Requirements:
 Node  (^19.x)   
