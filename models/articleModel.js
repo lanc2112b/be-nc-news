@@ -33,6 +33,7 @@ exports.selectAllArticles = (order = "desc", sort = "created_at", topic = null, 
     "created_at",
     "votes",
     "article_image_url",
+    "comment_count",
   ];
 
   const validOrderOptions = ["asc", "desc"];
@@ -55,7 +56,13 @@ exports.selectAllArticles = (order = "desc", sort = "created_at", topic = null, 
     return Promise.reject({ status: 400, msg: "Bad Request: sort by" });
   }
 
-  const sortQuery = ` ORDER BY ${sort} ${order}`;
+  //const sortQuery = ` ORDER BY ${sort} ${order}`;
+
+   const sortQuery =
+      sort === "comment_count"
+        ? `ORDER BY COUNT(c.comment_id) ${order}`
+        : ` ORDER BY ${sort} ${order}`;
+    console.log(sortQuery);
 
   const whereTopicQuery = topic ? ` WHERE topic = $3` : ``;
   
