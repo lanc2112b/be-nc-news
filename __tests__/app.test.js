@@ -188,6 +188,38 @@ describe("GET Endpoints", () => {
     });
   });
 
+  describe("GET /api/articles Sort by comment_count asc", () => {
+    it("200: Returns an array of objects containing articles with limit, page, & totals with comment_count", () => {
+      return request(app)
+        .get("/api/articles?limit=6&p=2&sort_by=comment_count&order=asc")
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles).toBeInstanceOf(Array);
+          expect(articles).toHaveLength(6);
+          expect(articles[0].article_id).toBe(12);
+          expect(articles[5].article_id).toBe(1);
+          expect(articles).toBeSortedBy("comment_count", {
+            ascending: true,
+            coerce: true,
+          });
+          articles.forEach((article) => {
+            expect(article.total_count).toBe("12");
+            expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+            });
+          });
+        });
+    });
+  });
+
   describe("GET /api/articles (20) L=default(10), P=2, default sort", () => {
     it("200: Returns an array of objects containing articles with limit, page, & totals", () => {
       return request(app)

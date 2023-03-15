@@ -56,13 +56,10 @@ exports.selectAllArticles = (order = "desc", sort = "created_at", topic = null, 
     return Promise.reject({ status: 400, msg: "Bad Request: sort by" });
   }
 
-  //const sortQuery = ` ORDER BY ${sort} ${order}`;
-
-   const sortQuery =
+  const sortQuery =
       sort === "comment_count"
         ? `ORDER BY COUNT(c.comment_id) ${order}`
         : ` ORDER BY ${sort} ${order}`;
-    console.log(sortQuery);
 
   const whereTopicQuery = topic ? ` WHERE topic = $3` : ``;
   
