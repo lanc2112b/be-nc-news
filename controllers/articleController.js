@@ -27,7 +27,9 @@ exports.getArticles = (request, response, next) => {
 
   selectAllArticles(order, sort_by, topic, limit, p)
     .then((results) => {
-      response.status(200).send({ articles: results });
+      response
+        .status(200)
+        .send({ articles: results, total_count: results[0].total_count });
     })
     .catch((error) => {
       next(error);

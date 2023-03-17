@@ -107,7 +107,7 @@ describe("GET Endpoints", () => {
     });
   });
 
-  describe("GET /api/articles/ (05)", () => {
+  describe("GET /api/articles/:article_id (05)", () => {
     it("200: Returns object with a single article, selected by id", () => {
       return request(app)
         .get("/api/articles/3")
@@ -380,6 +380,36 @@ describe("GET Endpoints", () => {
         });
     });
   });
+
+    describe("GET /api/articles (04)", () => {
+      it("200: Returns an array of objects containing articles", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then((response) => {
+            const { articles, total_count } = response.body;
+            expect(articles).toBeInstanceOf(Array);
+            expect(+total_count).toBe(12);
+            expect(articles).toHaveLength(10); // new default limit
+            expect(articles).toBeSorted({
+              key: "created_at",
+              descending: true,
+            });
+            articles.forEach((article) => {
+              expect(article).toMatchObject({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(String),
+              });
+            });
+          });
+      });
+    });
 
   describe("GET /api/articles (04)", () => {
     it("200: Returns an array of objects containing articles", () => {
